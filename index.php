@@ -4,45 +4,53 @@ $is_auth = rand(0, 1);
 $user_name = 'Секрет'; // укажите здесь ваше имя
 
 
-$category = array('Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное');
-$lots = array(
-    $lot1 = array(
-        'название' => '2014 Rossignol District Snowboard',
-        'категория' => 'Доски и лыжи',
-        'цена' => '10999',
+$category = [
+    'boards' =>'Доски и лыжи',
+     'attachment' =>'Крепления', 
+     'boots' => 'Ботинки',
+     'clothing' => 'Одежда',
+     'tools' =>'Инструменты',
+     'other' => 'Разное'
+    ];
+
+$lots = [
+    $lot1 = [
+        'name' => '2014 Rossignol District Snowboard',
+        'category' => 'Доски и лыжи',
+        'price' => '10999',
         'URL' => 'img/lot-1.jpg'
-    ),
-    $lot2 = array(
-        'название' => 'DC Ply Mens 2016/2017 Snowboard',
-        'категория' => 'Доски и лыжи',
-        'цена' => '159999',
+    ],
+    $lot2 = [
+        'name' => 'DC Ply Mens 2016/2017 Snowboard',
+        'category' => 'Доски и лыжи',
+        'price' => '159999',
         'URL' => 'img/lot-2.jpg'
-    ),
-    $lot3 = array(
-        'название' => 'Крепления Union Contact Pro 2015 года размер L/XL',
-        'категория' => 'Крепления',
-        'цена' => '8000',
+],
+    $lot3 = [
+        'name' => 'Крепления Union Contact Pro 2015 года размер L/XL',
+        'category' => 'Крепления',
+        'price' => '8000',
         'URL' => 'img/lot-3.jpg'
-    ),
-    $lot4 = array(
-        'название' => 'Ботинки для сноуборда DC Mutiny Charocal',
-        'категория' => 'Ботинки',
-        'цена' => '10999',
+],
+    $lot4 = [
+        'name' => 'Ботинки для сноуборда DC Mutiny Charocal',
+        'category' => 'Ботинки',
+        'price' => '10999',
         'URL' => 'img/lot-4.jpg'
-    ),
-    $lot5 = array(
-        'название' => 'Куртка для сноуборда DC Mutiny Charocal',
-        'категория' => 'Одежда',
-        'цена' => '7500',
+],
+    $lot5 = [
+        'name' => 'Куртка для сноуборда DC Mutiny Charocal',
+        'category' => 'Одежда',
+        'price' => '7500',
         'URL' => 'img/lot-5.jpg'
-    ),
-    $lot6 = array(
-        'название' => 'Маска Oakley Canopy',
-        'категория' => 'Разное',
-        'цена' => '5400',
+],
+    $lot6 = [
+        'name' => 'Маска Oakley Canopy',
+        'category' => 'Разное',
+        'price' => '5400',
         'URL' => 'img/lot-6.jpg'
-    )
-);
+    ]
+];
 
 //module2-task2
 
@@ -52,9 +60,9 @@ $lots = array(
 // };
 
 function formatNumber($num) {
-
-    $part1 = substr($num, 0, -3);
-    $part2 = substr($num, -3, 3);
+    $noFloat = ceil($num);
+    $part1 = substr($nofloat, 0, -3);
+    $part2 = substr($nofloat, -3, 3);
     $result = $part1 .' '. $part2 . ' ' .'₽';
     return $result;
 };
@@ -114,8 +122,8 @@ function formatNumber($num) {
                 <ul class="promo__list">
                     <!--заполните этот список из массива категорий-->
 
-                    <?php foreach ($category as $value) :?>
-                    <li class="promo__item promo__item--boards">
+                    <?php foreach ($category as $key => $value) :?>
+                    <li class="promo__item promo__item--<?=$key; ?>">
                         <a class="promo__link" href="pages/all-lots.html"><?=$value; ?></a>
                     </li>
                     <?php endforeach; ?>
@@ -131,15 +139,15 @@ function formatNumber($num) {
                     <?php foreach ($lots as $value):  ?>
                     <li class="lots__item lot">
                         <div class="lot__image">
-                            <img src="<?=$value['URL']; ?>" width="350" height="260" alt="<?=$value['название']; ?>">
+                            <img src="<?=$value['URL']; ?>" width="350" height="260" alt="<?=$value['name']; ?>">
                         </div>
                         <div class="lot__info">
-                            <span class="lot__category"><?=$value['категория']; ?></span>
-                            <h3 class="lot__title"><a class="text-link" href="pages/lot.html"><?=$value['название']; ?></a></h3>
+                            <span class="lot__category"><?=$value['category']; ?></span>
+                            <h3 class="lot__title"><a class="text-link" href="pages/lot.html"><?=$value['name']; ?></a></h3>
                             <div class="lot__state">
                                 <div class="lot__rate">
                                     <span class="lot__amount">Стартовая цена</span>
-                                    <span class="lot__cost"><?=formatNumber($value['цена']); ?></span>
+                                    <span class="lot__cost"><?=formatNumber($value['price']); ?></span>
                                 </div>
                                 <div class="lot__timer timer">
                                     12:23
