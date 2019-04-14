@@ -43,6 +43,22 @@ $lots = array(
         'URL' => 'img/lot-6.jpg'
     )
 );
+
+//module2-task2
+
+// function formatNumber($num) {
+//     $result = number_format((ceil($num)), 0, '.', ' ');
+//     return $result;
+// };
+
+function formatNumber($num) {
+
+    $part1 = substr($num, 0, -3);
+    $part2 = substr($num, -3, 3);
+    $result = $part1 .' '. $part2 . ' ' .'₽';
+    return $result;
+};
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -72,7 +88,7 @@ $lots = array(
                 <nav class="user-menu">
                     <?php if ($is_auth == 1): ?>
                     <div class="user-menu__logged">
-                        <p><?php print $user_name ?></p>
+                        <p><?=$user_name ?></p>
                         <a class="user-menu__bets" href="pages/my-bets.html">Мои ставки</a>
                         <a class="user-menu__logout" href="#">Выход</a>
                     </div>
@@ -123,7 +139,7 @@ $lots = array(
                             <div class="lot__state">
                                 <div class="lot__rate">
                                     <span class="lot__amount">Стартовая цена</span>
-                                    <span class="lot__cost"><?=$value['цена']; ?><b class="rub">р</b></span>
+                                    <span class="lot__cost"><?=formatNumber($value['цена']); ?></span>
                                 </div>
                                 <div class="lot__timer timer">
                                     12:23
