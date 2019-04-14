@@ -72,7 +72,11 @@ $lots = array(
                 <nav class="user-menu">
                     <?php if ($is_auth == 1): ?>
                     <div class="user-menu__logged">
+<<<<<<< HEAD
+                        <p><?=$user_name ?></p>
+=======
                         <p><?php print $user_name ?></p>
+>>>>>>> 175cc3812b43c1f7f535b9d6677ffa5fcddf86ce
                         <a class="user-menu__bets" href="pages/my-bets.html">Мои ставки</a>
                         <a class="user-menu__logout" href="#">Выход</a>
                     </div>
