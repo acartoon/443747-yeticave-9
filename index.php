@@ -5,13 +5,31 @@ $user_name = 'Секрет'; // укажите здесь ваше имя
 
 
 $category = [
-    'boards' =>'Доски и лыжи',
-     'attachment' =>'Крепления', 
-     'boots' => 'Ботинки',
-     'clothing' => 'Одежда',
-     'tools' =>'Инструменты',
-     'other' => 'Разное'
-    ];
+    0 => [
+        'class' => 'boards',
+        'name' => 'Доски и лыжи'
+    ],
+    1 => [
+        'class' => 'attachment',
+        'name' => 'Крепления'
+    ],
+    2 => [
+        'class' => 'boots',
+        'name' => 'Ботинки'
+    ],
+    3 => [
+        'class' => 'clothing',
+        'name' => 'Одежда'
+    ],
+    4 => [
+        'class' => 'tools',
+        'name' => 'Инструменты'
+    ],
+    5 => [
+        'class' => 'other',
+        'name' => 'Разное'
+    ]
+];
 
 $lots = [
     $lot1 = [
@@ -54,19 +72,21 @@ $lots = [
 
 //module2-task2
 
-// function formatNumber($num) {
-//     $result = number_format((ceil($num)), 0, '.', ' ');
-//     return $result;
-// };
-
 function formatNumber($num) {
-    $noFloat = ceil($num);
-    $part1 = substr($nofloat, 0, -3);
-    $part2 = substr($nofloat, -3, 3);
-    $result = $part1 .' '. $part2 . ' ' .'₽';
+    $result = number_format((ceil($num)), 0, '.', ' ');
+    $result .= '<b class="rub">р</b>';
     return $result;
 };
 
+// function formatNumber($num) {
+//     $noFloat = ceil($num);
+//     //print 'строка'.$noFloat;
+//     $part1 = substr($nofloat, 0, -3);
+//     $part2 = substr($nofloat, -3, 3);
+//    // $result = $part1 .' '. $part2 . ' ' .'₽';
+//     $result = $part2;
+//     return $result;
+// };
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -122,9 +142,9 @@ function formatNumber($num) {
                 <ul class="promo__list">
                     <!--заполните этот список из массива категорий-->
 
-                    <?php foreach ($category as $key => $value) :?>
-                    <li class="promo__item promo__item--<?=$key; ?>">
-                        <a class="promo__link" href="pages/all-lots.html"><?=$value; ?></a>
+                    <?php foreach ($category as $value) :?>
+                    <li class="promo__item promo__item--<?=$value['class']; ?>">
+                        <a class="promo__link" href="pages/all-lots.html"><?=$value['name']; ?></a>
                     </li>
                     <?php endforeach; ?>
                 </ul>
