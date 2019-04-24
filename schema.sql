@@ -1,43 +1,46 @@
-CREATE DATABASE yeticave;
-USE yeticave;
+CREATE DATABASE yeticave_443747;
+USE yeticave_443747;
 
 CREATE TABLE users (
 id INT AUTO_INCREMENT PRIMARY KEY,
-name CHAR NOT NULL,
+name VARCHAR NOT NULL,
 day_registration TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-email CHAR(128) NOT NULL UNIQUE,
-pass CHAR(64),
-avatar TEXT,
-contacts TEXT
+email VARCHAR NOT NULL UNIQUE,
+pass VARCHAR NOT NULL,
+avatar CHAR(200) UNIQUE,
+contacts TEXT NOT NULL
 );
 
 CREATE TABLE categories (
 id INT AUTO_INCREMENT PRIMARY KEY,
-character_code CHAR NOT NULL,
-name_category CHAR(128) NOT NULL
+character_code VARCHAR NOT NULL UNIQUE,
+name_category VARCHAR NOT NULL UNIQUE
 );
 
 CREATE TABLE lots (
 id INT AUTO_INCREMENT PRIMARY KEY,
 date_create TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-name_lot CHAR NOT NULL,
-description_lot TEXT,
-link TEXT,
-initial_price DECIMAL,
-date_end TIMESTAMP,
-step_rate INT,
-id_category INT,
-id_user INT,
-id_winner INT
+name VARCHAR NOT NULL,
+description TEXT NOT NULL,
+image_link CHAR(200) NOT NULL,
+initial_price INT NOT NULL,
+date_end TIMESTAMP NOT NULL,
+step_rate INT NOT NULL,
+category INT NOT NULL,
+user INT NOT NULL,
+winner INT NOT NULL,
+FOREIGN KEY (category) REFERENCES categories(id),
+FOREIGN KEY (user) REFERENCES users(id),
+FOREIGN KEY (winner) REFERENCES users(id),
+INDEX (name, category, user)
 );
 
 CREATE TABLE rates (
 id INT AUTO_INCREMENT PRIMARY KEY,
 date_create TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-price DECIMAL,
-id_lot INT,
-id_user INT
+price INT NOT NULL,
+lot INT NOT NULL,
+user INT NOT NULL,
+FOREIGN KEY (lot) REFERENCES lots(id),
+FOREIGN KEY (user) REFERENCES users(id)
 );
-
-CREATE INDEX name_lot ON lots(name_lot);
-CREATE INDEX id_category ON lots(id_category);

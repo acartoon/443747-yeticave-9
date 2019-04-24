@@ -20,7 +20,7 @@ function timer($date) {
     } elseif(0 < $timer_days and $timer_days < 6) {
         $result =  date_interval_format($dt_diff, "%d дн");
     } elseif(5 < $timer_days) {
-        $result =  date_interval_format($dt_diff, "%d дн %m м %y лет");
+        $result =  $date;
     }
     return $result;
 };
