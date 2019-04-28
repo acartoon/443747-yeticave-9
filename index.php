@@ -1,15 +1,40 @@
 <?php
-$con = mysqli_connect("localhost", "root", "","yeticave_443747");
-mysqli_set_charset($con, "utf8");
+$link = mysqli_connect("localhost", "root", "","yeticave_443747");
 
-$sql_categories = "SELECT character_code, name FROM categories"; 
-$result__categories = mysqli_query($con, $sql_categories); 
-$category = mysqli_fetch_all($result__categories, MYSQLI_ASSOC);
+if($link == false) {
+    $error = mysqli_connect_error();
+} else {
+    mysqli_set_charset($link, "utf8");
 
-$sql_lots = "SELECT l.name as name, c.name as category, initial_price as price, image_link as URL, date_end
-FROM lots l JOIN categories c WHERE category = c.id"; 
-$result__lots = mysqli_query($con, $sql_lots); 
-$lots = mysqli_fetch_all($result__lots, MYSQLI_ASSOC);
+    $sql_categories = "SELECT character_code, name FROM categories"; 
+    $result__categories = mysqli_query($link, $sql_categories); 
+
+    if($result__categories) {
+        $category = mysqli_fetch_all($result__categories, MYSQLI_ASSOC);
+    } else {
+        $error = mysqli_error($link);
+    }
+
+    $sql_lots = 
+    "SELECT l.name as name, c.name as category, initial_price as price, image_link as URL, date_end
+    FROM lots l 
+    JOIN categories c 
+    WHERE category = c.id
+    ORDER BY l.date_create ASC"; 
+    $result__lots = mysqli_query($link, $sql_lots);
+
+    if($result__lots) {
+        $lots = mysqli_fetch_all($result__lots, MYSQLI_ASSOC);
+    } else {
+        $error = mysqli_error($link);
+    }
+}
+
+
+
+
+
+
 
 require_once 'helpers.php';
 require_once 'functions.php';
