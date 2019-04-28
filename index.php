@@ -20,7 +20,7 @@ if($link == false) {
     FROM lots l 
     JOIN categories c 
     WHERE category = c.id
-    ORDER BY l.date_create ASC"; 
+    ORDER BY l.date_create DESC"; 
     $result__lots = mysqli_query($link, $sql_lots);
 
     if($result__lots) {
@@ -30,18 +30,12 @@ if($link == false) {
     }
 }
 
-
-
-
-
-
-
 require_once 'helpers.php';
 require_once 'functions.php';
 
 $is_auth = rand(0, 1);
 
-$user_name = 'Секрет'; // укажите здесь ваше имя
+$user_name = 'Секрет';
 
 $main_content = include_template('index.php', ['category' => $category, 'lots' => $lots]);
 
