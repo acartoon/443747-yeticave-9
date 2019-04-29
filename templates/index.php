@@ -34,7 +34,7 @@
                                     <span class="lot__cost"><?=formatPrice($value['price']); ?></span>
                                 </div>
                                 <div class="lot__timer timer">
-                                <?=timer('25.04.2019')?>
+                                <?=timer('25.04.2021')?>
                                 </div>
                             </div>
                         </div>
