@@ -33,11 +33,11 @@ VALUES ('179999', '2', '2'),
 SELECT * FROM categories;
 
 SELECT l.NAME, l.initial_price, l.image_link, IFNULL(MAX(r.price), l.initial_price) AS price, c.NAME, l.date_create, l.date_end
-From rates r
-right JOIN lots l ON r.lot = l.id
-JOIN categories c ON l.category = c.id
+From lots l
+left JOIN rates r ON r.lot = l.id
+left JOIN categories c ON l.category = c.id
 WHERE l.date_end > CURDATE()
-GROUP BY l.NAME, l.initial_price, l.image_link, c.NAME, l.date_create, l.date_end
+GROUP BY l.id
 ORDER BY l.date_create DESC;
 
 SELECT lots.name, categories.name
