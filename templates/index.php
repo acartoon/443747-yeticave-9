@@ -6,8 +6,8 @@
                 <ul class="promo__list">
                     <!--заполните этот список из массива категорий-->
 
-                    <?php foreach ($category as $value) :?>
-                    <li class="promo__item promo__item--<?=$value['class']; ?>">
+                    <?php foreach ($categories as $value) :?>
+                    <li class="promo__item promo__item--<?=$value['character_code']; ?>">
                         <a class="promo__link" href="pages/all-lots.html"><?=htmlspecialchars($value['name']); ?></a>
                     </li>
                     <?php endforeach; ?>
@@ -34,7 +34,7 @@
                                     <span class="lot__cost"><?=formatPrice($value['price']); ?></span>
                                 </div>
                                 <div class="lot__timer timer">
-                                <?=timer('25.04.2021')?>
+                                <?=timer($value['date_end'])?>
                                 </div>
                             </div>
                         </div>

@@ -1,83 +1,35 @@
 <?php
-
 require_once 'helpers.php';
 require_once 'functions.php';
 
+$link = mysqli_connect("localhost", "root", "","yeticave_443747");
+
+if($link == false) {
+    $error = mysqli_connect_error();
+    print 'Сайт находится на технических работах. Зайдите позже';
+    exit();
+} else {
+    mysqli_set_charset($link, "utf8");
+
+    $sql_categories = "SELECT character_code, name FROM categories"; 
+    $sql_lots = 
+    "SELECT l.name as name, c.name as category, initial_price as price, image_link as URL, date_end
+    FROM lots l 
+    JOIN categories c 
+    WHERE category = c.id
+    ORDER BY l.date_create DESC"; 
+    $categories = getData($sql_categories, $link);
+    $lots = getData($sql_lots, $link);
+};
+
 $is_auth = rand(0, 1);
 
-$user_name = 'Секрет'; // укажите здесь ваше имя
+$user_name = 'Секрет';
 
-
-$category = [
-    [
-        'class' => 'boards',
-        'name' => 'Доски и лыжи'
-    ],
-    [
-        'class' => 'attachment',
-        'name' => 'Крепления'
-    ],
-    [
-        'class' => 'boots',
-        'name' => 'Ботинки'
-    ],
-    [
-        'class' => 'clothing',
-        'name' => 'Одежда'
-    ],
-    [
-        'class' => 'tools',
-        'name' => 'Инструменты'
-    ],
-    [
-        'class' => 'other',
-        'name' => 'Разное'
-    ]
-];
-
-$lots = [
-    [
-        'name' => '2014 Rossignol District Snowboard',
-        'category' => 'Доски и лыжи',
-        'price' => '10999',
-        'URL' => 'img/lot-1.jpg'
-    ],
-    [
-        'name' => 'DC Ply Mens 2016/2017 Snowboard',
-        'category' => 'Доски и лыжи',
-        'price' => '159999',
-        'URL' => 'img/lot-2.jpg'
-    ],
-    [
-        'name' => 'Крепления Union Contact Pro 2015 года размер L/XL',
-        'category' => 'Крепления',
-        'price' => '8000',
-        'URL' => 'img/lot-3.jpg'
-    ],
-    [
-        'name' => 'Ботинки для сноуборда DC Mutiny Charocal',
-        'category' => 'Ботинки',
-        'price' => '10999',
-        'URL' => 'img/lot-4.jpg'
-    ],
-    [
-        'name' => 'Куртка для сноуборда DC Mutiny Charocal',
-        'category' => 'Одежда',
-        'price' => '7500',
-        'URL' => 'img/lot-5.jpg'
-    ],
-    [
-        'name' => 'Маска Oakley Canopy',
-        'category' => 'Разное',
-        'price' => '5400',
-        'URL' => 'img/lot-6.jpg'
-    ]
-];
-
-$main_content = include_template('index.php', ['category' => $category, 'lots' => $lots]);
+$main_content = include_template('index.php', ['categories' => $categories, 'lots' => $lots]);
 
 $index_page = include_template('layout.php', 
-['category' => $category, 'main_content' => $main_content, 'title' => 'Главная', 'is_auth' => $is_auth, 'user_name' => $user_name]);
+['categories' => $categories, 'main_content' => $main_content, 'title' => 'Главная', 'is_auth' => $is_auth, 'user_name' => $user_name]);
 
 
 print $index_page;
