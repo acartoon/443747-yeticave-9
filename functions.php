@@ -35,7 +35,8 @@ function timer($date) {
     } elseif(0 < $timer_days and $timer_days < 6) {
         $result =  date_interval_format($dt_diff, "%d дн");
     } elseif(5 < $timer_days) {
-        $result =  $date;
+
+        $result =  date('d-j-y', strtotime($date));
     }
     return $result;
 };
@@ -47,6 +48,7 @@ function timer($date) {
  * @return $array массив с данными
  * 
  */
+
 function getData($request, $link) {
     $result = mysqli_query($link, $request);
     $array = [];
@@ -55,4 +57,82 @@ function getData($request, $link) {
     }
     return $array;
 };
+
+/**
+ * Возвращает массив с лотами
+ * @param $link ресурс соединения с базой данных
+ * @return $result массив с лотами
+ * 
+ */
+function getLots($link) {
+    $request = "SELECT l.id, l.name as name, c.name as category, initial_price as price, image_link as URL, date_end
+    FROM lots l 
+    JOIN categories c 
+    WHERE category = c.id
+    ORDER BY l.date_create DESC";
+    
+    $result = getData($request, $link);
+    return $result;
+};
+
+/**
+ * Возвращает массив с категориями
+ * @param $link ресурс соединения с базой данных
+ * @return $result массив с категориями
+ * 
+ */
+function getCategories($link) {
+    $request = "SELECT character_code, name FROM categories";
+    $result = getData($request, $link);
+    return $result;
+};
+
+/**
+ * Возвращает многомерный массив с лотами и числом рядов в результирующей выборке
+ * @param $link ресурс соединения с базой данных
+ * @return $result многомерный массив с лотом $lot и числом рядов в результирующей выборке $count
+ * 
+ */
+function getlot($link) {
+    $request = 'SELECT l.name, l.initial_price, l.image_link, l.description, 
+    IFNULL(MAX(r.price), l.initial_price) AS price, c.NAME AS category, l.date_create, l.date_end
+    From lots l
+    left JOIN rates r ON r.lot = l.id
+    left JOIN categories c ON l.category = c.id
+    WHERE l.id = (?) GROUP BY l.id';
+   
+   $get = [
+        $_GET['tab']
+    ];
+
+    $stmt = db_get_prepare_stmt($link, $request, $get);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    if($res) {
+        $lot = mysqli_fetch_assoc($res);
+        $count = mysqli_num_rows($res);
+        $result = ['lot' => $lot, 'count' => $count];
+    }
+    return $result;
+};
+
+/**
+ * Возвращает класс 'timer--finishing', если времени осталось меньше суток
+ * @param $link ресурс соединения с базой данных
+ * @param  $request SQL запрос
+ * @return $array массив с данными
+ *  */
+function addClass($date) {
+    $dt_end = date_create($date);
+    $dt_now = date_create("now");
+    $dt_diff = date_diff($dt_now, $dt_end);
+    $timer_days = date_interval_format($dt_diff, "%a");
+    $result = '';
+
+    if($timer_days < 1 and $dt_now < $dt_end) {
+        $result = 'timer--finishing';
+    };
+
+    return $result;
+}
 ?>
