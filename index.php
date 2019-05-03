@@ -1,11 +1,6 @@
 <?php
-require_once 'helpers.php';
-require_once 'functions.php';
-require_once 'data.php';
-require_once 'bd.php';
+require_once 'connection.php';
 
-
-$categories = getCategories($link);
 $lots = getLots($link);
 
 $main_content = include_template('index.php', ['categories' => $categories, 'lots' => $lots]);

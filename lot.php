@@ -1,16 +1,23 @@
 <?php
-require_once 'helpers.php';
-require_once 'functions.php';
-require_once 'data.php';
-require_once 'bd.php';
-require_once 'queries.php';
+require_once 'connection.php';
 
-$categories = getCategories($link);
-$lot = getlot($link);
+if(isset($_GET['id'])) {
 
-if (isset($_GET['tab']) and ($lot['count'] > 0)) {
- $main_content = include_template('lot.php', ['categories' => $categories, 'lot' => $lot['lot']]);
+    $get = [
+        $_GET['id']  
+      ];
+
+    $lot = getlot($link, $get);
+
+    if($lot['count'] > 0) {
+        $main_content = include_template('lot.php', ['categories' => $categories, 'lot' => $lot['lot']]);
+    } else {
+        http_response_code(404);
+        $main_content = include_template('404.php'); 
+    };
+  
 } else {
+    http_response_code(404);
     $main_content = include_template('404.php');
 };
 

@@ -1,4 +1,7 @@
 <?php
+
+
+require_once 'helpers.php';
 /**
  * Возвращает целочисленную цену лота с делением на разряды и знаком рубля в конце
  * @param $num число
@@ -36,7 +39,7 @@ function timer($date) {
         $result =  date_interval_format($dt_diff, "%d дн");
     } elseif(5 < $timer_days) {
 
-        $result =  date('d-j-y', strtotime($date));
+        $result =  date('j-n-y', strtotime($date));
     }
     return $result;
 };
@@ -66,9 +69,10 @@ function getData($request, $link) {
  */
 function getLots($link) {
     $request = "SELECT l.id, l.name as name, c.name as category, initial_price as price, image_link as URL, date_end
-    FROM lots l 
-    JOIN categories c 
-    WHERE category = c.id
+    FROM lots l
+    JOIN categories c
+    ON category = c.id
+    WHERE l.date_end > CURDATE()
     ORDER BY l.date_create DESC";
     
     $result = getData($request, $link);
@@ -93,17 +97,13 @@ function getCategories($link) {
  * @return $result многомерный массив с лотом $lot и числом рядов в результирующей выборке $count
  * 
  */
-function getlot($link) {
+function getlot($link, $get) {
     $request = 'SELECT l.name, l.initial_price, l.image_link, l.description, 
     IFNULL(MAX(r.price), l.initial_price) AS price, c.NAME AS category, l.date_create, l.date_end
     From lots l
     left JOIN rates r ON r.lot = l.id
     left JOIN categories c ON l.category = c.id
     WHERE l.id = (?) GROUP BY l.id';
-   
-   $get = [
-        $_GET['tab']
-    ];
 
     $stmt = db_get_prepare_stmt($link, $request, $get);
     mysqli_stmt_execute($stmt);
