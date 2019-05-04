@@ -2,7 +2,7 @@
 require_once 'functions.php';
 require_once 'bd.php';
 
-$categories = getCategories($link);
+$categories = get_categories($link);
 
 $is_auth = rand(0, 1);
 

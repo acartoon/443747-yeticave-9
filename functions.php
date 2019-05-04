@@ -8,7 +8,7 @@ require_once 'helpers.php';
  * @return  $result форматированная цена для вывода на сайте
  * 
  */
-function formatPrice($num) {
+function format_price($num) {
     $result = number_format((ceil($num)), 0, '.', ' ');
     $result .= '<b class="rub">р</b>';
     return $result;
@@ -52,7 +52,7 @@ function timer($date) {
  * 
  */
 
-function getData($request, $link) {
+function get_data($request, $link) {
     $result = mysqli_query($link, $request);
     $array = [];
     if($result) {
@@ -67,7 +67,7 @@ function getData($request, $link) {
  * @return $result массив с лотами
  * 
  */
-function getLots($link) {
+function get_lots($link) {
     $request = "SELECT l.id, l.name as name, c.name as category, initial_price as price, image_link as URL, date_end
     FROM lots l
     JOIN categories c
@@ -85,9 +85,9 @@ function getLots($link) {
  * @return $result массив с категориями
  * 
  */
-function getCategories($link) {
+function get_categories($link) {
     $request = "SELECT character_code, name FROM categories";
-    $result = getData($request, $link);
+    $result = get_data($request, $link);
     return $result;
 };
 
@@ -97,13 +97,15 @@ function getCategories($link) {
  * @return $result многомерный массив с лотом $lot и числом рядов в результирующей выборке $count
  * 
  */
-function getlot($link, $get) {
+function get_lot($link, $get) {
     $request = 'SELECT l.name, l.initial_price, l.image_link, l.description, 
     IFNULL(MAX(r.price), l.initial_price) AS price, c.NAME AS category, l.date_create, l.date_end
     From lots l
     left JOIN rates r ON r.lot = l.id
     left JOIN categories c ON l.category = c.id
     WHERE l.id = (?) GROUP BY l.id';
+    $lot = [];
+    $count = 0;
 
     $stmt = db_get_prepare_stmt($link, $request, $get);
     mysqli_stmt_execute($stmt);
@@ -111,8 +113,8 @@ function getlot($link, $get) {
     if($res) {
         $lot = mysqli_fetch_assoc($res);
         $count = mysqli_num_rows($res);
-        $result = ['lot' => $lot, 'count' => $count];
     }
+    $result = ['lot' => $lot, 'count' => $count];
     return $result;
 };
 
@@ -122,7 +124,7 @@ function getlot($link, $get) {
  * @param  $request SQL запрос
  * @return $array массив с данными
  *  */
-function addClass($date) {
+function add_class($date) {
     $dt_end = date_create($date);
     $dt_now = date_create("now");
     $dt_diff = date_diff($dt_now, $dt_end);
@@ -134,5 +136,16 @@ function addClass($date) {
     };
 
     return $result;
+};
+/**
+ * Выводит шаблон ошибки 404 и прекращает работу скрипта
+ *  */
+function error_404() {
+    http_response_code(404);
+    $main_content = include_template('404.php');
+    $index_page = include_template('layout.php', 
+    ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Главная', 'is_auth' => $is_auth, 'user_name' => $user_name]);
+    print $index_page;
+    exit();
 }
 ?>
