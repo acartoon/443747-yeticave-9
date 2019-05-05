@@ -4,9 +4,6 @@ require_once 'init.php';
 $main_content = include_template('add-lot.php', ['categories' => $categories]);    
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $lot = $_POST['lot'];
-        // print '<pre>';
-        // print_r($lot);
-        // print '</pre>';
         $errors = [];
 
         foreach ($lot as $key => $value)  {
@@ -43,8 +40,8 @@ $main_content = include_template('add-lot.php', ['categories' => $categories]);
             }
         };
 
-        if(isset($_FILES['img'])) {
-            $tmp_name = $_FILES['img']['tmp_name']; //временное имя файла
+            if(is_uploaded_file($_FILES['img']['tmp_name'])) {
+            $tmp_name = $_FILES['img']['tmp_name'];
             $file_type = mime_content_type($tmp_name);
 
             if($file_type == 'image/jpeg' or $file_type == 'image/png') {
@@ -59,10 +56,11 @@ $main_content = include_template('add-lot.php', ['categories' => $categories]);
             } else {
                 $errors['img'] = 'Неверный формат файла';
             }
+        } else {
+            $errors['img'] = 'Поле не заполнено';
         }
         
         if(count($errors)) {
-
             $main_content = include_template('add-lot.php', ['categories' => $categories, 'errors' => $errors, 'lot' => $lot]);  
         }
         else {
