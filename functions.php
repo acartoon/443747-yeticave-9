@@ -45,6 +45,25 @@ function timer($date) {
 };
 
 /**
+ * Таймер обратного отсчета до закрытия лота
+ * @param $date дата закрытия лота
+ * @return  $result срок до окончания лота
+ * 
+ * Проверяет, что переданная дата больше текущей даты
+ * Если текущая дата больше, возвращает true
+ */
+function check_date($date) {
+    $check_date = date_create($date);
+    $dt_now = date_create("now");
+    $result = false;
+   
+    if($dt_now > $check_date) {
+        $result = true;
+    }
+    return $result;
+};
+
+/**
  * Возвращает массив с данными из бд на основании запроса
  * @param $link ресурс соединения с базой данных
  * @param  $request SQL запрос
@@ -75,7 +94,7 @@ function get_lots($link) {
     WHERE l.date_end > CURDATE()
     ORDER BY l.date_create DESC";
     
-    $result = getData($request, $link);
+    $result = get_data($request, $link);
     return $result;
 };
 
@@ -86,7 +105,7 @@ function get_lots($link) {
  * 
  */
 function get_categories($link) {
-    $request = "SELECT character_code, name FROM categories";
+    $request = "SELECT id, character_code, name FROM categories";
     $result = get_data($request, $link);
     return $result;
 };
