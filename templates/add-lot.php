@@ -11,11 +11,11 @@
         <?php endforeach; ?>
       </ul>
     </nav>
-    <?php $classname = (isset($errors)) ? 'form--invalid' : ""; ?>
+    <?php $classname = (empty($errors)) ? '' : 'form--invalid'; ?>
     <form class="form form--add-lot container <?=$classname?>" action="add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
       <h2>Добавление лота</h2>
       <div class="form__container-two">
-      <?php $classname = isset($errors['name']) ? 'form__item--invalid' : "";
+      <?php $classname = isset($errors['name']) ? 'form__item--invalid' : '';
       $value = isset($lot['name']) ? $lot['name']: '';
       $message = isset($errors['name']) ? $errors['name']: ''?>
         <div class="form__item <?=$classname?>"> <!-- form__item--invalid -->
@@ -23,8 +23,7 @@
           <input id="lot-name" type="text" name="lot[name]" placeholder="Введите наименование лота" value="<?=$value?>"> 
           <span class="form__error"><?=$message?></span>
         </div>
-        <?php $classname = isset($errors['category']) ? 'form__item--invalid' : "";
-        $value = (isset($lot['category'])) ? 'selected' : '';
+        <?php $classname = isset($errors['category']) ? 'form__item--invalid' : '';
          $message = isset($errors['category']) ? $errors['category']: '';?>
         <div class="form__item <?=$classname?>">
           <label for="category">Категория <sup>*</sup></label>
@@ -37,7 +36,7 @@
           <span class="form__error"><?=$message?></span>
         </div>
       </div>
-      <?php $classname = isset($errors['description']) ? 'form__item--invalid' : "";
+      <?php $classname = isset($errors['description']) ? 'form__item--invalid' : '';
         $value = isset($lot['description']) ? $lot['description']: '';
         $message = isset($errors['description']) ? $errors['description']: '';?>
       <div class="form__item form__item--wide <?=$classname?>">
@@ -45,7 +44,7 @@
         <textarea id="message" name="lot[description]" placeholder="Напишите описание лота"><?=$value?></textarea>
         <span class="form__error"><?=$message?></span>
       </div>
-      <?php $classname = isset($errors['img']) ? 'form__item--invalid' : "";
+      <?php $classname = isset($errors['img']) ? 'form__item--invalid' : '';
        $message = isset($errors['img']) ? $errors['img']: '';?>
       <div class="form__item form__item--file <?=$classname?>">
         <label>Изображение <sup>*</sup></label>
@@ -57,7 +56,7 @@
         </div>
       </div>
       <div class="form__container-three">
-      <?php $classname = isset($errors['rate']) ? 'form__item--invalid' : "";
+      <?php $classname = isset($errors['rate']) ? 'form__item--invalid' : '';
         $value = isset($lot['rate']) ? $lot['rate']: '';
         $message = isset($errors['rate']) ? $errors['rate']: '';?>
         <div class="form__item form__item--small <?=$classname?>">
@@ -65,7 +64,7 @@
           <input id="lot-rate" type="text" name="lot[rate]" placeholder="0" value="<?=$value?>"> 
           <span class="form__error"><?=$message?></span>
         </div>
-        <?php $classname = isset($errors['step']) ? 'form__item--invalid' : "";
+        <?php $classname = isset($errors['step']) ? 'form__item--invalid' : '';
         $value = isset($lot['step']) ? $lot['step']: '';
         $message = isset($errors['step']) ? $errors['step']: '';?>
         <div class="form__item form__item--small <?=$classname?>">
@@ -73,7 +72,7 @@
           <input id="lot-step" type="text" name="lot[step]" placeholder="0" value="<?=$value?>"> 
           <span class="form__error"><?=$message?></span>
         </div>
-        <?php $classname = isset($errors['date']) ? 'form__item--invalid' : "";
+        <?php $classname = isset($errors['date']) ? 'form__item--invalid' : '';
         $value = isset($lot['date']) ? $lot['date']: '';
         $message = isset($errors['date']) ? $errors['date']: '';?>
         <div class="form__item <?=$classname?>">

@@ -14,27 +14,34 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         };
         foreach ($lot as $key => $value)  {
-            if($key == 'rate') {
+            if($key === 'rate') {
                 if(!is_numeric($value) and $value <= 0) {
                     $errors[$key] = 'Начальная цена должна быть числом больше 0';
                 };
             }
-            elseif($key == 'category') {
-                if($value == 'Выберите категорию') {
-                    $errors[$key] = 'Выберите категорию';
+            elseif($key === 'category') {
+                $check_category = 'SELECT NOT EXISTS (SELECT * FROM categories WHERE id = ?) AS result';
+                $stmt =  db_get_prepare_stmt($link, $check_category, [$lot['category']]);
+                mysqli_stmt_execute($stmt);
+                $res = mysqli_stmt_get_result($stmt);
+                if($res) {
+                    $total = mysqli_fetch_assoc($res);
+                    if($total['result'] == 1) {
+                        $errors['category'] = 'Выберете существующую категорию';
+                    }
                 };
             }
-            elseif($key == 'step') {
+            elseif($key === 'step') {
                 if((int)$value <= 0) {
                     $errors[$key] = 'Шаг ставки должен быть целым числом больше 0';
                 };
             }
-            elseif($key == 'name') {
+            elseif($key === 'name') {
                 if(strlen($value) > 64) {
                     $errors[$key] = 'Вашим именем можно вызвать сатану! Придумайте имя короче';
                 };
             }
-            elseif($key == 'date') {
+            elseif($key === 'date') {
                 if(!is_date_valid($value)) {
                     $errors[$key] = 'Дата завершения должна быть в формате "ГГГГ-ММ-ДД"';
                 }
@@ -50,29 +57,31 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         };
 
-        if(is_uploaded_file($_FILES['img']['tmp_name'])) {
-        $tmp_name = $_FILES['img']['tmp_name'];
-        $file_type = mime_content_type($tmp_name);
-
-            if($file_type == 'image/jpeg' or $file_type == 'image/png') {
-                $file_name = $_FILES['img']['name'];
-                $file_name_arr = explode('.', $file_name);
-                $file_name_arr_count = count($file_name_arr);
-                $file_type = $file_name_arr[$file_name_arr_count-1];
-                $file_unic = uniqid() .'.' .$file_type;
-                $file_path = __DIR__ . '/uploads/';
-                $file_url = '../uploads/'. $file_unic;
-                move_uploaded_file($tmp_name, $file_path .$file_unic);  
-            } else {
-                $errors['img'] = 'Неверный формат файла';
-            }
-        } else {
-            $errors['img'] = 'Поле не заполнено';
+        if (isset($_FILES['img']) && is_uploaded_file($_FILES['img']['tmp_name'])) {
+            $tmp_name = $_FILES['img']['tmp_name'];
+            $file_type = mime_content_type($tmp_name);
+            if(($file_type !== 'image/png') and ($file_type !== 'image/jpeg')){
+                $errors['file'] = 'Неверный формат файла';
+                print $file_type;
+            }  
+        }else {
+            $errors['file'] = 'Не загружен файл';
+            
         };
     
         if(count($errors)) {
+            print_r($errors);
         }
         else {
+            if($file_type === 'image/jpeg') {
+                $file_type = 'jpeg';
+            } elseif($file_type === 'image/png') {
+                $file_type = 'png';
+            };
+            $file_unic = uniqid() .'.' .$file_type;
+            $file_url = '/uploads/' .$file_unic;
+            move_uploaded_file($tmp_name, $file_url);
+
             $sql = 'INSERT INTO lots (date_create, name, description, 
                 image_link, initial_price, date_end, step_rate, category, user)
                 VAlUES (NOW(), ?, ?, ?, ?, ?, ?, ?, 1)';
