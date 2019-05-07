@@ -15,8 +15,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         };
         foreach ($lot as $key => $value)  {
             if($key === 'rate') {
-                if(!is_numeric($value) and $value <= 0) {
-                    $errors[$key] = 'Начальная цена должна быть числом больше 0';
+                if((int)$value <= 0) {
+                    $errors[$key] = 'Начальная цена должна быть целым числом больше 0';
                 };
             }
             elseif($key === 'category') {
@@ -64,15 +64,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $errors['file'] = 'Неверный формат файла';
                 print $file_type;
             }  
-        }else {
+        } else {
             $errors['file'] = 'Не загружен файл';
             
         };
     
         if(count($errors)) {
             print_r($errors);
-        }
-        else {
+        } else {
             if($file_type === 'image/jpeg') {
                 $file_type = 'jpeg';
             } elseif($file_type === 'image/png') {
@@ -84,9 +83,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $sql = 'INSERT INTO lots (date_create, name, description, 
                 image_link, initial_price, date_end, step_rate, category, user)
-                VAlUES (NOW(), ?, ?, ?, ?, ?, ?, ?, 1)';
+                VAlUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
             $stmt = db_get_prepare_stmt($link, $sql, [$lot['name'], $lot['description'], 
-                $file_url, $lot['rate'], $lot['date'], $lot['step'], $lot['category']]);
+                $file_url, $lot['rate'], $lot['date'], $lot['step'], $lot['category'], $name]);
             $res = mysqli_stmt_execute($stmt);
 
             if($res) {
