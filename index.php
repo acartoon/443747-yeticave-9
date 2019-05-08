@@ -1,7 +1,7 @@
 <?php
-require_once 'connection.php';
+require_once 'init.php';
 
-$lots = getLots($link);
+$lots = get_lots($link);
 
 $main_content = include_template('index.php', ['categories' => $categories, 'lots' => $lots]);
 

@@ -4,11 +4,11 @@
 require_once 'helpers.php';
 /**
  * Возвращает целочисленную цену лота с делением на разряды и знаком рубля в конце
- * @param $num число
- * @return  $result форматированная цена для вывода на сайте
+ * @param float $num число, требующее форматирования
+ * @return string форматированная цена для вывода на сайте
  * 
  */
-function formatPrice($num) {
+function format_price($num) {
     $result = number_format((ceil($num)), 0, '.', ' ');
     $result .= '<b class="rub">р</b>';
     return $result;
@@ -16,8 +16,8 @@ function formatPrice($num) {
 
 /**
  * Таймер обратного отсчета до закрытия лота
- * @param $date дата закрытия лота
- * @return  $result срок до окончания лота
+ * @param string $date дата закрытия лота в виде строки
+ * @return string срок до окончания лота
  * 
  * Если дата окончания лота меньше текущей даты возвращает строку 'лот закрыт'
  * Если до окончания меньше 1 дня возвращает часы и минуты до закрытия лота
@@ -45,14 +45,30 @@ function timer($date) {
 };
 
 /**
+ * Проверяет, что переданная дата больше текущей даты
+ * @param string $date дата в виде строки
+ * @return boolean true если дата предстоящая, false если прошедшая
+ */
+function check_date($date) {
+    $check_date = date_create($date);
+    $dt_now = date_create("now");
+    $result = false;
+   
+    if($dt_now > $check_date) {
+        $result = true;
+    }
+    return $result;
+};
+
+/**
  * Возвращает массив с данными из бд на основании запроса
- * @param $link ресурс соединения с базой данных
- * @param  $request SQL запрос
- * @return $array массив с данными
+ * @param mysqli $link ресурс соединения с базой данных
+ * @param  string $request SQL запрос
+ * @return array массив с данными
  * 
  */
 
-function getData($request, $link) {
+function get_data($request, $link) {
     $result = mysqli_query($link, $request);
     $array = [];
     if($result) {
@@ -63,11 +79,11 @@ function getData($request, $link) {
 
 /**
  * Возвращает массив с лотами
- * @param $link ресурс соединения с базой данных
- * @return $result массив с лотами
+ * @param mysqli $link ресурс соединения с базой данных
+ * @return array $result массив с лотами
  * 
  */
-function getLots($link) {
+function get_lots($link) {
     $request = "SELECT l.id, l.name as name, c.name as category, initial_price as price, image_link as URL, date_end
     FROM lots l
     JOIN categories c
@@ -75,35 +91,35 @@ function getLots($link) {
     WHERE l.date_end > CURDATE()
     ORDER BY l.date_create DESC";
     
-    $result = getData($request, $link);
+    $result = get_data($request, $link);
     return $result;
 };
 
 /**
  * Возвращает массив с категориями
- * @param $link ресурс соединения с базой данных
- * @return $result массив с категориями
- * 
+ * @param mysqli $link ресурс соединения с базой данных
+ * @return array $result массив с категориями
  */
-function getCategories($link) {
-    $request = "SELECT character_code, name FROM categories";
-    $result = getData($request, $link);
+function get_categories($link) {
+    $request = "SELECT id, character_code, name FROM categories";
+    $result = get_data($request, $link);
     return $result;
 };
 
 /**
  * Возвращает многомерный массив с лотами и числом рядов в результирующей выборке
- * @param $link ресурс соединения с базой данных
- * @return $result многомерный массив с лотом $lot и числом рядов в результирующей выборке $count
- * 
+ * @param mysqli $link ресурс соединения с базой данных
+ * @return array многомерный массив с лотом $lot и числом рядов в результирующей выборке $count
  */
-function getlot($link, $get) {
+function get_lot($link, $get) {
     $request = 'SELECT l.name, l.initial_price, l.image_link, l.description, 
     IFNULL(MAX(r.price), l.initial_price) AS price, c.NAME AS category, l.date_create, l.date_end
     From lots l
     left JOIN rates r ON r.lot = l.id
     left JOIN categories c ON l.category = c.id
     WHERE l.id = (?) GROUP BY l.id';
+    $lot = [];
+    $count = 0;
 
     $stmt = db_get_prepare_stmt($link, $request, $get);
     mysqli_stmt_execute($stmt);
@@ -111,18 +127,18 @@ function getlot($link, $get) {
     if($res) {
         $lot = mysqli_fetch_assoc($res);
         $count = mysqli_num_rows($res);
-        $result = ['lot' => $lot, 'count' => $count];
     }
+    $result = ['lot' => $lot, 'count' => $count];
     return $result;
 };
 
 /**
  * Возвращает класс 'timer--finishing', если времени осталось меньше суток
- * @param $link ресурс соединения с базой данных
- * @param  $request SQL запрос
- * @return $array массив с данными
+ * @param mysqli $link ресурс соединения с базой данных
+ * @param  string $request SQL запрос
+ * @return array $array массив с данными
  *  */
-function addClass($date) {
+function add_class($date) {
     $dt_end = date_create($date);
     $dt_now = date_create("now");
     $dt_diff = date_diff($dt_now, $dt_end);
@@ -134,5 +150,15 @@ function addClass($date) {
     };
 
     return $result;
+};
+/**
+ * Возвращает код ошибки сервера 404
+ * Выводит шаблон ошибки 404
+ *  */
+function error_404() {
+    http_response_code(404);
+    $index_page = include_template('404.php');
+    print $index_page;
+    exit();
 }
 ?>
