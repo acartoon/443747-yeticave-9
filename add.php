@@ -62,23 +62,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $file_type = mime_content_type($tmp_name);
             if(($file_type !== 'image/png') and ($file_type !== 'image/jpeg')){
                 $errors['file'] = 'Неверный формат файла';
-                print $file_type;
             }  
         } else {
             $errors['file'] = 'Не загружен файл';
-            
         };
     
-        if(count($errors)) {
-            print_r($errors);
-        } else {
+        if(!count($errors)) {
             if($file_type === 'image/jpeg') {
                 $file_type = 'jpeg';
             } elseif($file_type === 'image/png') {
                 $file_type = 'png';
             };
             $file_unic = uniqid() .'.' .$file_type;
-            $file_url = '/uploads/' .$file_unic;
+            $file_url = 'uploads/' .$file_unic;
             move_uploaded_file($tmp_name, $file_url);
 
             $sql = 'INSERT INTO lots (date_create, name, description, 
@@ -94,6 +90,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 error_404();  
             };
+        } else {
+            // print_r($errors);
         };
     };
 };
