@@ -5,7 +5,5 @@ require_once 'bd.php';
 $categories = get_categories($link);
 $lots = get_lots($link);
 
-$name = 2;
-
-$user_name = 'Секрет';
+$id_name = 2;
 ?>

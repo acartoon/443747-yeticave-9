@@ -82,9 +82,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
-$main_content = include_template('add-lot.php', ['categories' => $categories, 'errors' => $errors, 'lot' => $lot]);      
+$main_content = isset($_SESSION['user']) ?
+include_template('add-lot.php', ['categories' => $categories, 'errors' => $errors, 'lot' => $lot]):
+include_template('403.php', ['categories' => $categories]);  
+
 $index_page = include_template('layout.php', 
-    ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Карточка товара', 'is_auth' => $is_auth, 'user_name' => $user_name]);
+    ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Карточка товара']);
 
 print $index_page;
 ?>

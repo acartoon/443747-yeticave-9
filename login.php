@@ -42,7 +42,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $index_page = include_template('layout.php', 
-    ['user' => $_SESSION['user']['name'], 'categories' => $categories, 'main_content' => $main_content, 'title' => 'Главная', 'is_auth' => $is_auth, 'user_name' => $user_name]);
+    ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Главная']);
 
 print $index_page;
 ?>
