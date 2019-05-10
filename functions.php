@@ -89,7 +89,8 @@ function get_lots($link) {
     JOIN categories c
     ON category = c.id
     WHERE l.date_end > CURDATE()
-    ORDER BY l.date_create DESC";
+    ORDER BY l.date_create DESC
+    LIMIT 6";
     
     $result = get_data($request, $link);
     return $result;
