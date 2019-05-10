@@ -15,7 +15,7 @@
       $message = isset($errors['email']) ? $errors['email']: ''?>
       <div class="form__item <?=$classname;?>">
         <label for="email">E-mail <sup>*</sup></label>
-        <input id="email" type="text" name="user[email]" placeholder="Введите e-mail" value="<?=$value;?>">
+        <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?=$value;?>">
         <span class="form__error"><?=$message;?></span>
       </div>
       <?php $classname = isset($errors['password']) ? 'form__item--invalid' : "";
@@ -23,7 +23,7 @@
       $message = isset($errors['password']) ? $errors['password']: ''?>
       <div class="form__item <?=$classname;?>">
         <label for="password">Пароль <sup>*</sup></label>
-        <input id="password" type="password" name="user[password]" placeholder="Введите пароль" value="<?=$value;?>">
+        <input id="password" type="password" name="password" placeholder="Введите пароль" value="<?=$value;?>">
         <span class="form__error"><?=$message;?></span>
       </div>
       <?php $classname = isset($errors['name']) ? 'form__item--invalid' : "";
@@ -31,7 +31,7 @@
       $message = isset($errors['name']) ? $errors['name']: ''?>
       <div class="form__item <?=$classname;?>">
         <label for="name">Имя <sup>*</sup></label>
-        <input id="name" type="text" name="user[name]" placeholder="Введите имя" value="<?=$value;?>">
+        <input id="name" type="text" name="name" placeholder="Введите имя" value="<?=$value;?>">
         <span class="form__error"><?=$message;?></span>
       </div>
       <?php $classname = isset($errors['message']) ? 'form__item--invalid' : "";
@@ -39,7 +39,7 @@
       $message = isset($errors['message']) ? $errors['message']: ''?>
       <div class="form__item <?=$classname;?>">
         <label for="message">Контактные данные <sup>*</sup></label>
-        <textarea id="message" name="user[message]" placeholder="Напишите как с вами связаться"><?=$value;?></textarea>
+        <textarea id="message" name="message" placeholder="Напишите как с вами связаться"><?=$value;?></textarea>
         <span class="form__error"><?=$message;?></span>
       </div>
       <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
