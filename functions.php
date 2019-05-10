@@ -153,16 +153,13 @@ function add_class($date) {
     return $result;
 };
 /**
- * Возвращает код ошибки сервера 404
- * Выводит шаблон ошибки 404
+ * Возвращает код ошибки сервера и шаблон согласно коду ошибки
+ * @param string $error_code код ошибки
+ * @param string $error_page название шаблона ошибки в папке templates
+ * @param string $title заголовок страницы
+ * @param string $categories массив с категориями
+ * 
  *  */
-// function error($error_code, $error_page) {
-//     http_response_code($error_code);
-//     $index_page = include_template($error_page);
-//     print $index_page;
-//     exit();
-// }
-
 function error($error_code, $error_page, $title, $categories) {
     http_response_code($error_code);
     $main_content = include_template($error_page);
