@@ -5,7 +5,7 @@ require_once 'bd.php';
 $categories = get_categories($link);
 
 $is_auth = rand(0, 1);
-$name = 2;
+$id_name = 2;
 
 $user_name = 'Секрет';
 ?>
