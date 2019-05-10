@@ -1,13 +1,5 @@
   <main>
-    <nav class="nav">
-      <ul class="nav__list container">
-      <?php foreach ($categories as $value) :?>
-        <li class="nav__item">
-          <a href="all-lots.html"><?=$value['name']; ?></a>
-        </li>
-        <?php endforeach; ?>
-      </ul>
-    </nav>
+  <?php $nav_list; ?>
     <?php $classname = isset($errors) ? 'form--invalid' : '';?>
     <form class="form container <?=$classname?>" action="login.php" method="post"> <!-- form--invalid -->
       <h2>Вход</h2>

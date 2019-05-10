@@ -3,7 +3,11 @@ require_once 'init.php';
 $errors = [];
 $lot = [];
 
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
+if(!isset($_SESSION['user'])) {
+    error(403, '403.php', 'Доступ запрещен!', $categories);  
+}
+
+if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
     $required_fields = ['name', 'category', 'description', 'rate', 'step', 'date'];
 
     foreach($required_fields as $field) {
@@ -14,16 +18,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    if(isset($lot['name'])) {
-        if(strlen($lot['name']) > 64) {
-            $errors['name'] = 'Вашим именем можно вызвать сатану! Придумайте имя короче';
-        }
+    if(isset($lot['name']) and strlen($lot['name']) > 64) {
+        $errors['name'] = 'Вашим именем можно вызвать сатану! Придумайте имя короче';
     }
-    if(isset($lot['rate'])) {
-        if((int)$lot['rate'] <= 0) {
-            $errors['rate'] = 'Начальная цена должна быть целым числом больше 0';
-        }
+
+    if(isset($lot['rate']) and (int)$lot['rate'] <= 0) {
+        $errors['rate'] = 'Начальная цена должна быть целым числом больше 0';
     }
+
     if(isset($lot['category'])) {
         $check_category = 'SELECT * FROM categories WHERE id = ?';
         $stmt =  db_get_prepare_stmt($link, $check_category, [$lot['category']]);
@@ -34,11 +36,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['category'] = 'Выберете существующую категорию';
         }
     }
-    if(isset($lot['step'])) {
-        if((int)$lot['step'] <= 0) {
-            $errors['step'] = 'Шаг ставки должен быть целым числом больше 0';
-        }
+    
+    if(isset($lot['step']) and (int)$lot['step'] <= 0) {
+        $errors['step'] = 'Шаг ставки должен быть целым числом больше 0';
     }
+
     if(isset($lot['date'])) {
         if(!is_date_valid($lot['date'])) {
             $errors['date'] = 'Дата завершения должна быть в формате "ГГГГ-ММ-ДД"';
@@ -71,21 +73,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             image_link, initial_price, date_end, step_rate, category, user)
             VAlUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
         $stmt = db_get_prepare_stmt($link, $sql, [$lot['name'], $lot['description'], 
-            $file_url, $lot['rate'], $lot['date'], $lot['step'], $lot['category'], $id_name]);
+            $file_url, $lot['rate'], $lot['date'], $lot['step'], $lot['category'], $_SESSION['user']['name']]);
         $res = mysqli_stmt_execute($stmt);
         if($res) {
             $lot_id = mysqli_insert_id($link);
             header("location: lot.php?id=" . $lot_id);
             exit();
         } else {
-            error_404();  
+            error(404, '404.php');  
         }
     }
 }
-$main_content = isset($_SESSION['user']) ?
-include_template('add-lot.php', ['categories' => $categories, 'errors' => $errors, 'lot' => $lot]):
-include_template('403.php', ['categories' => $categories]);  
-
+$main_content = include_template('add-lot.php', ['categories' => $categories, 'errors' => $errors, 'lot' => $lot]);
 $index_page = include_template('layout.php', 
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Карточка товара']);
 

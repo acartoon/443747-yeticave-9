@@ -1,9 +1,14 @@
 <?php
 require_once 'init.php';
-session_start();
 $errors = [];
 $data = [];
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+if(isset($_SESSION['user'])) {
+    header("location: /");
+    exit(); 
+}
+
+if($_SERVER['REQUEST_METHOD'] == 'POST' and !isset($_SESSION['user'])) {
     $required_fields = ['email', 'password'];
 
     foreach ($required_fields as $field) {
@@ -34,12 +39,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if(!count($errors)) {
         $_SESSION['user'] = $user;
         header("location: /");
+        exit();
     }
-} else {
-    $main_content = isset($_SESSION['user']) ?
-    include_template('index.php', ['categories' => $categories, 'lots' => $lots]) :
-    include_template('login.php', ['categories' => $categories, 'data' => $data, 'errors' => $errors]);
 }
+
+$main_content = include_template('login.php', ['categories' => $categories, 'data' => $data, 'errors' => $errors]);
 
 $index_page = include_template('layout.php', 
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Главная']);

@@ -10,5 +10,3 @@ $index_page = include_template('layout.php',
 
 print $index_page;
 ?>
-
-

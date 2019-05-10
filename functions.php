@@ -156,9 +156,18 @@ function add_class($date) {
  * Возвращает код ошибки сервера 404
  * Выводит шаблон ошибки 404
  *  */
-function error_404() {
-    http_response_code(404);
-    $index_page = include_template('404.php');
+// function error($error_code, $error_page) {
+//     http_response_code($error_code);
+//     $index_page = include_template($error_page);
+//     print $index_page;
+//     exit();
+// }
+
+function error($error_code, $error_page, $title, $categories) {
+    http_response_code($error_code);
+    $main_content = include_template($error_page);
+    $index_page = include_template('layout.php', 
+        ['categories' => $categories, 'main_content' => $main_content, 'title' => $title]);
     print $index_page;
     exit();
 }
