@@ -1,13 +1,5 @@
 <main>
-    <nav class="nav">
-        <ul class="nav__list container">
-            <?php foreach ($categories as $value) :?>
-            <li class="nav__item">
-                <a href="pages/all-lots.html"><?=$value['name']; ?></a>
-            </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+<?php $nav_list; ?>
     <section class="lot-item container">
         <h2><?=htmlspecialchars($lot['name']); ?></h2>
         <div class="lot-item__content">
@@ -19,6 +11,7 @@
                 <p class="lot-item__description"><?=htmlspecialchars($lot['description']);?></p>
             </div>
             <div class="lot-item__right">
+            <?php if(isset($_SESSION['user'])): ?>
                 <div class="lot-item__state">
                     <div class="lot-item__timer timer <?=add_class($lot['date_end']);?>">
                     <?=timer($lot['date_end']);?>
@@ -41,6 +34,7 @@
                         <button type="submit" class="button">Сделать ставку</button>
                     </form>
                 </div>
+                <?php endif; ?>
                 <div class="history">
                     <h3>История ставок (<span>10</span>)</h3>
                     <table class="history__list">

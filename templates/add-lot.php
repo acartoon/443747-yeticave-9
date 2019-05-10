@@ -2,15 +2,7 @@
 <?php
 ?>
 <main>
-    <nav class="nav">
-      <ul class="nav__list container">
-      <?php foreach ($categories as $value) :?>
-        <li class="nav__item">
-          <a href="all-lots.html"><?=$value['name']; ?></a>
-        </li>
-        <?php endforeach; ?>
-      </ul>
-    </nav>
+  <?php $nav_list; ?>
     <?php $classname = (empty($errors)) ? '' : 'form--invalid'; ?>
     <form class="form form--add-lot container <?=$classname?>" action="add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
       <h2>Добавление лота</h2>

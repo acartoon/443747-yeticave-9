@@ -89,7 +89,8 @@ function get_lots($link) {
     JOIN categories c
     ON category = c.id
     WHERE l.date_end > CURDATE()
-    ORDER BY l.date_create DESC";
+    ORDER BY l.date_create DESC
+    LIMIT 6";
     
     $result = get_data($request, $link);
     return $result;
@@ -152,12 +153,18 @@ function add_class($date) {
     return $result;
 };
 /**
- * Возвращает код ошибки сервера 404
- * Выводит шаблон ошибки 404
+ * Возвращает код ошибки сервера и шаблон согласно коду ошибки
+ * @param string $error_code код ошибки
+ * @param string $error_page название шаблона ошибки в папке templates
+ * @param string $title заголовок страницы
+ * @param string $categories массив с категориями
+ * 
  *  */
-function error_404() {
-    http_response_code(404);
-    $index_page = include_template('404.php');
+function error($error_code, $error_page, $title, $categories) {
+    http_response_code($error_code);
+    $main_content = include_template($error_page);
+    $index_page = include_template('layout.php', 
+        ['categories' => $categories, 'main_content' => $main_content, 'title' => $title]);
     print $index_page;
     exit();
 }
