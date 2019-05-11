@@ -113,8 +113,8 @@ function get_categories($link) {
  * @return array многомерный массив с лотом $lot и числом рядов в результирующей выборке $count
  */
 function get_lot($link, $get) {
-    $request = 'SELECT l.name, l.initial_price, l.image_link, l.description, 
-    IFNULL(MAX(r.price), l.initial_price) AS price, c.NAME AS category, l.date_create, l.date_end
+    $request = 'SELECT l.id, l.name, l.initial_price, l.image_link, l.description, l.step_rate as rate, 
+    IFNULL(MAX(r.price), l.initial_price) AS price, IFNULL(MAX(r.price) + l.step_rate, l.initial_price + l.step_rate) AS min_price,c.NAME AS category, l.date_create, l.date_end, l.user
     From lots l
     left JOIN rates r ON r.lot = l.id
     left JOIN categories c ON l.category = c.id
@@ -133,21 +133,53 @@ function get_lot($link, $get) {
     return $result;
 };
 
+function get_rates($link, $get) {
+    // $result = [];
+    $request = "SELECT r.id, r.date_create, r.price, r.lot, r.user as id_user, u.name  FROM rates r
+    JOIN users u ON r.user = u.id
+    WHERE lot = (?)
+    ORDER BY r.date_create DESC";
+    $stmt = db_get_prepare_stmt($link, $request, $get);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    if($res) {
+        $result = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    }
+    return $result;
+}
+
+function get_rates_for_user($link, $id) {
+    // $result = [];
+    $request = "SELECT l.NAME, l.image_link, l.id, c.NAME AS category, l.date_end, r.price, r.date_create, r.user
+    FROM rates r
+    JOIN lots l ON l.id = r.lot
+    JOIN categories c ON l.category = c.id
+    WHERE r.USER = (?)
+    ORDER BY r.date_create DESC";
+    $stmt = db_get_prepare_stmt($link, $request, $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    if($res) {
+        $result = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    }
+    return $result;
+}
+
 /**
  * Возвращает класс 'timer--finishing', если времени осталось меньше суток
  * @param mysqli $link ресурс соединения с базой данных
  * @param  string $request SQL запрос
  * @return array $array массив с данными
  *  */
-function add_class($date) {
+function check_passed_date($date) {
     $dt_end = date_create($date);
     $dt_now = date_create("now");
     $dt_diff = date_diff($dt_now, $dt_end);
     $timer_days = date_interval_format($dt_diff, "%a");
-    $result = '';
+    $result = false;
 
     if($timer_days < 1 and $dt_now < $dt_end) {
-        $result = 'timer--finishing';
+        $result = true;
     };
 
     return $result;
@@ -168,4 +200,5 @@ function error($error_code, $error_page, $title, $categories) {
     print $index_page;
     exit();
 }
+
 ?>

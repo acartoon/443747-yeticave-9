@@ -69,18 +69,16 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
         $file_url = 'uploads/' . $file_unic;
         move_uploaded_file($tmp_name, $file_url);
 
-        $sql = 'INSERT INTO lots (date_create, name, description, 
-            image_link, initial_price, date_end, step_rate, category, user)
+        $sql = 'INSERT INTO lots (date_create, name, description, image_link, initial_price, date_end, step_rate, category, user)
             VAlUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
-        $stmt = db_get_prepare_stmt($link, $sql, [$lot['name'], $lot['description'], 
-            $file_url, $lot['rate'], $lot['date'], $lot['step'], $lot['category'], $_SESSION['user']['name']]);
+        $stmt = db_get_prepare_stmt($link, $sql, [$lot['name'], $lot['description'], $file_url, $lot['rate'], $lot['date'], $lot['step'], $lot['category'], $_SESSION['user']['id']]);
         $res = mysqli_stmt_execute($stmt);
         if($res) {
             $lot_id = mysqli_insert_id($link);
             header("location: lot.php?id=" . $lot_id);
             exit();
         } else {
-            error(404, '404.php');  
+            error(404, '404.php', 'Ошибка добавления лота!', $categories);  
         }
     }
 }
