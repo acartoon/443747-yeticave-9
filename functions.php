@@ -45,6 +45,41 @@ function timer($date) {
 };
 
 /**
+ * Выводит формат входящей даты в зависимости от текущего времени
+ * @param string $date входящая дата в виде строки
+ * @return string форматированная дата
+ * 
+ * Если дата меньше часа назад - "N минут/минут/минуты"
+ * Если от часа до вчерашнего дня - "N час/часа/часов"
+ * Если вчерашняя дата - "Вчера, в ЧЧ:ММ"
+ * Если раньше, чем полночь вчера = "ДД:ММ:ГГ, в ЧЧ:ММ"
+ */
+function format_date($date) {
+    $res = '';
+    $date_rates = strtotime($date);
+    $date_now = strtotime('now');
+    $date_today = strtotime('today midnight');
+    $date_yesterday = strtotime('yesterday midnight');
+    $date_diff = $date_now - $date_rates;
+    $diff_hour = floor($date_diff / 3600);
+    $diff_min = floor($date_diff / 60);
+
+    if($date_yesterday < $date_rates and $date_today > $date_rates) {
+        $res = 'Вчера, ' . date('G:i', $date_rates);
+    }
+    elseif ($diff_hour > 0 and $date_rates > $date_today){
+        $res = $diff_hour . ' ' . get_noun_plural_form($diff_hour, 'час', 'часа', 'часов') . ' назад';
+    }
+    elseif($date_now - 3600 < $date_rates) {
+        $res = $diff_min . ' ' . get_noun_plural_form($diff_min, 'минута', 'минуты', 'минут') . ' назад';
+    }
+    elseif($date_rates < $date_yesterday) {
+        $res = date('d.m.y в G:i', $date_rates);
+    }
+    return $res;
+};
+
+/**
  * Проверяет, что переданная дата больше текущей даты
  * @param string $date дата в виде строки
  * @return boolean true если дата предстоящая, false если прошедшая
@@ -110,9 +145,10 @@ function get_categories($link) {
 /**
  * Возвращает многомерный массив с лотами и числом рядов в результирующей выборке
  * @param mysqli $link ресурс соединения с базой данных
+ * @param array $id id лота для выборки 
  * @return array многомерный массив с лотом $lot и числом рядов в результирующей выборке $count
  */
-function get_lot($link, $get) {
+function get_lot($link, $id) {
     $request = 'SELECT l.id, l.name, l.initial_price, l.image_link, l.description, l.step_rate as rate, 
     IFNULL(MAX(r.price), l.initial_price) AS price, IFNULL(MAX(r.price) + l.step_rate, l.initial_price + l.step_rate) AS min_price,c.NAME AS category, l.date_create, l.date_end, l.user
     From lots l
@@ -122,7 +158,7 @@ function get_lot($link, $get) {
     $lot = [];
     $count = 0;
 
-    $stmt = db_get_prepare_stmt($link, $request, $get);
+    $stmt = db_get_prepare_stmt($link, $request, $id);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
     if($res) {
@@ -133,13 +169,19 @@ function get_lot($link, $get) {
     return $result;
 };
 
-function get_rates($link, $get) {
-    // $result = [];
+/**
+ * Возвращает многомерный массив со ставками по id лота
+ * @param mysqli $link ресурс соединения с базой данных
+ * @param array $id id лота для выборки 
+ * @return array многомерный массив со ставками
+ */
+function get_rates($link, $id) {
+    $result = [];
     $request = "SELECT r.id, r.date_create, r.price, r.lot, r.user as id_user, u.name  FROM rates r
     JOIN users u ON r.user = u.id
     WHERE lot = (?)
     ORDER BY r.date_create DESC";
-    $stmt = db_get_prepare_stmt($link, $request, $get);
+    $stmt = db_get_prepare_stmt($link, $request, $id);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
     if($res) {
@@ -148,8 +190,14 @@ function get_rates($link, $get) {
     return $result;
 }
 
-function get_rates_for_user($link, $id) {
-    // $result = [];
+/**
+ * Возвращает многомерный массив со ставками по id пользователя
+ * @param mysqli $link ресурс соединения с базой данных
+ * @param array $id id пользователя для выборки 
+ * @return array многомерный массив со ставками
+ */
+function get_rates_by_user($link, $id) {
+    $result = [];
     $request = "SELECT l.NAME, l.image_link, l.id, c.NAME AS category, l.date_end, r.price, r.date_create, r.user
     FROM rates r
     JOIN lots l ON l.id = r.lot
@@ -166,10 +214,10 @@ function get_rates_for_user($link, $id) {
 }
 
 /**
- * Возвращает класс 'timer--finishing', если времени осталось меньше суток
+ * Возвращает true если осталось меньше 24 часов до входящей даты, но больше 0
  * @param mysqli $link ресурс соединения с базой данных
- * @param  string $request SQL запрос
- * @return array $array массив с данными
+ * @param string $date дата в виде строки
+ * @return boolean true если меньше 24 часов до входящей даты, но больше 0
  *  */
 function check_passed_date($date) {
     $dt_end = date_create($date);
@@ -200,5 +248,4 @@ function error($error_code, $error_page, $title, $categories) {
     print $index_page;
     exit();
 }
-
 ?>

@@ -19,10 +19,10 @@
             <div class="timer <?=$classname; ?>"><?=timer($rate['date_end']); ?></div>
           </td>
           <td class="rates__price">
-            <?=format_price($rate['price']); ?>
+            <?=number_format($rate['price'], 0, '.', ' ') . ' p'; ?>
           </td>
           <td class="rates__time">
-          <?=$rate['date_create']; ?>
+          <?=format_date($rate['date_create']); ?>
           </td>
         </tr>
         <? endforeach; ?>

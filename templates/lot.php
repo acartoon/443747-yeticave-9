@@ -19,10 +19,10 @@
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
-                            <span class="lot-item__cost"><?=format_price($lot['price']);?></span>
+                            <span class="lot-item__cost"><?=number_format($lot['price'], 0, '.', ' ') . ' p'; ?></span>
                         </div>
                         <div class="lot-item__min-cost">
-                            Мин. ставка <span><?=format_price($lot['min_price']);?></span>
+                            Мин. ставка <span><?=number_format($lot['min_price'], 0, '.', ' ') . ' p'; ;?></span>
                         </div>
                     </div>
                     <?php if($add_rate): ?>
@@ -45,7 +45,7 @@
                         <?php foreach ($rates as $rate) :?>
                         <tr class="history__item">
                             <td class="history__name"><?=$rate['name']?></td>
-                            <td class="history__price"><?=format_price($rate['price'])?></td>
+                            <td class="history__price"><?=number_format($rate['price'], 0, '.', ' ') . ' p'; ?></td>
                             <td class="history__time"><?=$rate['date_create']?></td>
                         </tr>
                         <?php endforeach; ?>

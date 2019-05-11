@@ -2,9 +2,7 @@
 require_once 'init.php';
 
 $id = [$_SESSION['user']['id']];
-$rates = get_rates_for_user($link, $id);
-// print $_SESSION['user']['id'];
-
+$rates = get_rates_by_user($link, $id);
 
 $main_content = include_template('my-bets.php', ['categories' => $categories, 'rates' => $rates]);
 
