@@ -12,38 +12,15 @@ $get = [
 ];
 
 $lot = get_lot($link, $get);
-$rates = get_rates($link, $get);
-$rates_count = count($rates);
 
 if($lot['count'] == 0) {
     error(404, '404.php', 'Такой страницы не существует!', $categories);  
 }
 
-$add_rate = false;
+$rates = get_rates($link, $get);
+$rates_count = count($rates);
 
-if(isset($_SESSION['user'])) {
-    $check_autor = false;
-    $check_date = false;
-    $check_user = true;
-
-    if($_SESSION['user']['id'] !== $lot['lot']['user']) {
-        $check_autor = true;
-    }
-
-    if($rates_count > 0) {
-        if($_SESSION['user']['id'] === $rates[0]['id_user']) {
-            $check_user = false;
-        }
-    }
-
-    if(date_create($lot['lot']['date_end']) > date_create("now")) {
-        $check_date = true;
-    }
-
-    if($check_user and $check_date and $check_autor) {
-        $add_rate = true; 
-    }
-}
+$add_rate = to_add_rate($lot['lot']['user'], $rates_count, $rates[0]['id_user'], $lot['lot']['date_end']);
 
 if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
 
