@@ -1,7 +1,6 @@
 <?php
-
-
 require_once 'helpers.php';
+
 /**
  * Возвращает целочисленную цену лота с делением на разряды и знаком рубля в конце
  * @param float $num число, требующее форматирования
@@ -45,9 +44,127 @@ function timer($date) {
 };
 
 /**
+ * Выводит формат входящей даты в зависимости от текущего времени
+ * @param string $date входящая дата в виде строки
+ * @return string форматированная дата
+ * 
+ * Если дата меньше часа назад - "N минут/минут/минуты"
+ * Если от часа до вчерашнего дня - "N час/часа/часов"
+ * Если вчерашняя дата - "Вчера, в ЧЧ:ММ"
+ * Если раньше, чем полночь вчера = "ДД:ММ:ГГ, в ЧЧ:ММ"
+ */
+function format_rates_time($date) {
+    $res = '';
+    $date_rates = strtotime($date);
+    $date_now = strtotime('now');
+    $date_today = strtotime('today midnight');
+    $date_yesterday = strtotime('yesterday midnight');
+    $date_diff = $date_now - $date_rates;
+    $diff_hour = floor($date_diff / 3600);
+    $diff_min = floor($date_diff / 60);
+
+    if($date_yesterday < $date_rates and $date_today > $date_rates) {
+        $res = 'Вчера, ' . date('G:i', $date_rates);
+    }
+    elseif ($diff_hour > 0 and $date_rates > $date_today){
+        $res = $diff_hour . ' ' . get_noun_plural_form($diff_hour, 'час', 'часа', 'часов') . ' назад';
+    }
+    elseif($date_now - 3600 < $date_rates) {
+        $res = $diff_min . ' ' . get_noun_plural_form($diff_min, 'минута', 'минуты', 'минут') . ' назад';
+    }
+    elseif($date_rates < $date_yesterday) {
+        $res = date('d.m.y в G:i', $date_rates);
+    }
+    return $res;
+};
+
+/**
+ * Возвращает true если id пользователя совпадает с открытой сессией
+ * @param int $user id пользователя
+ * @return string true если id совпадает, false если не совпадает
+ */
+function get_winner($user) {
+    $res = false;
+    if($_SESSION['user']['id'] === $user) {
+        $res = true;
+    }
+    return $res;
+};
+
+/**
+ * Возвращает строку с информацией о статусе и дате лота
+ * @param string $date дата окончания лота
+ * @param int $user id победителя
+ * @return string если торги окончены "торги окончены", 
+ * если торги окончены и зарегистрированный пользователь победитель "ставка выиграла",
+ * если лот не закрыт "ЧЧ:ММ"
+ */
+function format_rates_timer($date, $user) {
+if(is_null($user)) {
+    $date_end = strtotime($date);
+    $date_now = strtotime('now');  
+        if($date_now > $date_end) {
+        $res = 'Торги окончены';
+    } else {
+        $date_diff = $date_end - $date_now;
+        $hours = floor($date_diff / 3600);
+        $minutes = floor(($date_diff % 3600) / 60);
+        $res = $hours . ":" . $minutes; 
+    }
+} else {
+    if(get_winner($user)) {
+        $res = 'Ставка выиграла';
+    } 
+}
+return $res;
+};
+
+/**
+ * Возвращает $class1 если входящая дата прошла, $class2 если победитель зарегистрированный пользователь
+ * @param int $user id победителя
+ * @param string $date дата окончания лота
+ * @param string $class1
+ * @param string $class2
+ * @return string если торги окончены $class1, если победитель зарегистрированный пользователь $class2
+ */
+function class_rates($user, $date, $class1, $class2) {
+    if(is_null($user)) {
+        if(check_date($date)) {
+            $res = $class1;
+        }
+    } else {
+        if(get_winner($user)) {
+            $res = $class2;
+        } 
+    }
+    return $res;
+};
+
+/**
+ * Возвращает $class1 если осталось меньше суток до входящей даты, $class2 если победитель зарегистрированный пользователь
+ * @param int $user id победителя
+ * @param string $date дата окончания лота
+ * @param string $class1
+ * @param string $class2
+ * @return string если если осталось меньше суток $class1, если победитель зарегистрированный пользователь $class2
+ */
+function class_rates_timer($user, $date, $class1, $class2) {
+    if(is_null($user)) {
+        if(check_passed_date($date)) {
+            $res = $class1;
+        }
+    } else {
+        if(get_winner($user)) {
+            $res = $class2;
+        } 
+    }
+    return $res;
+};
+
+/**
  * Проверяет, что переданная дата больше текущей даты
  * @param string $date дата в виде строки
- * @return boolean true если дата предстоящая, false если прошедшая
+ * @return boolean false если дата предстоящая, true если прошедшая
  */
 function check_date($date) {
     $check_date = date_create($date);
@@ -67,7 +184,6 @@ function check_date($date) {
  * @return array массив с данными
  * 
  */
-
 function get_data($request, $link) {
     $result = mysqli_query($link, $request);
     $array = [];
@@ -110,11 +226,12 @@ function get_categories($link) {
 /**
  * Возвращает многомерный массив с лотами и числом рядов в результирующей выборке
  * @param mysqli $link ресурс соединения с базой данных
+ * @param array $id id лота для выборки 
  * @return array многомерный массив с лотом $lot и числом рядов в результирующей выборке $count
  */
-function get_lot($link, $get) {
-    $request = 'SELECT l.name, l.initial_price, l.image_link, l.description, 
-    IFNULL(MAX(r.price), l.initial_price) AS price, c.NAME AS category, l.date_create, l.date_end
+function get_lot($link, $id) {
+    $request = 'SELECT l.id, l.name, l.initial_price, l.image_link, l.description, l.step_rate as rate, 
+    IFNULL(MAX(r.price), l.initial_price) AS price, IFNULL(MAX(r.price) + l.step_rate, l.initial_price + l.step_rate) AS min_price,c.NAME AS category, l.date_create, l.date_end, l.user
     From lots l
     left JOIN rates r ON r.lot = l.id
     left JOIN categories c ON l.category = c.id
@@ -122,7 +239,7 @@ function get_lot($link, $get) {
     $lot = [];
     $count = 0;
 
-    $stmt = db_get_prepare_stmt($link, $request, $get);
+    $stmt = db_get_prepare_stmt($link, $request, $id);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
     if($res) {
@@ -134,20 +251,64 @@ function get_lot($link, $get) {
 };
 
 /**
- * Возвращает класс 'timer--finishing', если времени осталось меньше суток
+ * Возвращает многомерный массив со ставками по id лота
  * @param mysqli $link ресурс соединения с базой данных
- * @param  string $request SQL запрос
- * @return array $array массив с данными
+ * @param array $id id лота для выборки 
+ * @return array многомерный массив со ставками
+ */
+function get_rates($link, $id) {
+    $result = [];
+    $request = "SELECT r.id, r.date_create, r.price, r.lot, r.user as id_user, u.name  FROM rates r
+    JOIN users u ON r.user = u.id
+    WHERE lot = (?)
+    ORDER BY r.date_create DESC";
+    $stmt = db_get_prepare_stmt($link, $request, $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    if($res) {
+        $result = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    }
+    return $result;
+}
+
+/**
+ * Возвращает многомерный массив со ставками по id пользователя
+ * @param mysqli $link ресурс соединения с базой данных
+ * @param array $id id пользователя для выборки 
+ * @return array многомерный массив со ставками
+ */
+function get_rates_by_user($link, $id) {
+    $result = [];
+    $request = "SELECT l.NAME, l.image_link, l.id, c.NAME AS category, l.date_end, r.price, r.date_create, r.user, winner
+    FROM rates r
+    JOIN lots l ON l.id = r.lot
+    JOIN categories c ON l.category = c.id
+    WHERE r.USER = (?)
+    ORDER BY r.date_create DESC";
+    $stmt = db_get_prepare_stmt($link, $request, $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    if($res) {
+        $result = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    }
+    return $result;
+}
+
+/**
+ * Возвращает true если осталось меньше 24 часов до входящей даты, но больше 0
+ * @param mysqli $link ресурс соединения с базой данных
+ * @param string $date дата в виде строки
+ * @return boolean true если меньше 24 часов до входящей даты, но больше 0
  *  */
-function add_class($date) {
+function check_passed_date($date) {
     $dt_end = date_create($date);
     $dt_now = date_create("now");
     $dt_diff = date_diff($dt_now, $dt_end);
     $timer_days = date_interval_format($dt_diff, "%a");
-    $result = '';
+    $result = false;
 
     if($timer_days < 1 and $dt_now < $dt_end) {
-        $result = 'timer--finishing';
+        $result = true;
     };
 
     return $result;
@@ -168,4 +329,44 @@ function error($error_code, $error_page, $title, $categories) {
     print $index_page;
     exit();
 }
+
+/**
+ * Проверяет может ли пользователь сделать ставку
+ * @param int $id id автора лота
+ * @param string $rates_count количество ставок по лоту
+ * @param string $user_rate автор постеледней ставки
+ * @param string $date_end дата окончания аукциона
+ * @return boolean true если пользователь не автор лота, 
+ * не сделал последнюю ставку, пользователь залогинен и аукцион по этому лоту не закончен.
+ * Если любое из этих значение false, то результат false
+ *  */
+function to_add_rate($id, $rates_count, $user_rate, $date_end) {
+    $add_rate = false;
+
+    if(isset($_SESSION['user'])) {
+        $check_autor = false;
+        $check_date = false;
+        $check_user = true;
+
+        if($_SESSION['user']['id'] !== $id) {
+            $check_autor = true;
+        }
+
+        if($rates_count > 0) {
+            if($_SESSION['user']['id'] === $user_rate) {
+                $check_user = false;
+            }
+        }
+
+        if(date_create($date_end) > date_create("now")) {
+            $check_date = true;
+        }
+
+        if($check_user and $check_date and $check_autor) {
+            $add_rate = true; 
+        }
+    }
+    return $add_rate;
+}
+
 ?>
