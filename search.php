@@ -1,22 +1,28 @@
 <?php
 require_once 'init.php';
 $lots = [];
-$search = [''];
+$search = [];
 $message = 'По вашему запросу ничего не найдено!';
 if(isset($_GET['search'])) {
     $search = [
-        trim($_GET['search'])  
+        $_GET['search']
     ];
-    
+
+    $cur_page = $_GET['page'] ?? 1;
+    $page_items = 6;
 
     $sql = 'SELECT COUNT(*) as count FROM lots
-    WHERE MATCH(name, description) AGAINST(?)';
+    WHERE MATCH(name, description) AGAINST(?) and date_end > NOW()';
 
     $stmt = db_get_prepare_stmt($link, $sql, $search);
     mysqli_stmt_execute($stmt);
 
     $res = mysqli_stmt_get_result($stmt);
     $items_count = mysqli_fetch_assoc($res)['count'];
+
+    $pages_count = ceil($items_count / $page_items);
+    $offset = ($cur_page - 1) * $page_items;
+    $pages = range(1, $pages_count);
 
     $request = 'SELECT l.id, l.name, l.initial_price, l.image_link, l.description, l.step_rate as rate, 
     IFNULL(MAX(r.price), l.initial_price) AS price, IFNULL(MAX(r.price) + l.step_rate, l.initial_price + l.step_rate) AS min_price,c.NAME AS category, l.date_create, l.date_end, l.user
@@ -27,7 +33,7 @@ if(isset($_GET['search'])) {
     and l.date_end > NOW()
     GROUP BY l.id
     ORDER BY l.id ASC
-    LIMIT 3';
+    LIMIT ' . $page_items . ' OFFSET ' .  $offset;
 
 
     $stmt = db_get_prepare_stmt($link, $request, $search);
@@ -35,18 +41,18 @@ if(isset($_GET['search'])) {
     
     $res = mysqli_stmt_get_result($stmt);
     $total = $res ? mysqli_fetch_assoc($res): null;
-
     if($total) {
         $lots = mysqli_fetch_all($res, MYSQLI_ASSOC);
         $message = 'Результаты поиска по запросу «<span>' . htmlspecialchars($search[0]) . '</span>»';
     }
     
 
-    // print_r($items_count);
-    print_r($lots);
+    print_r($items_count);
+    // print_r($lots);
     
 }
-$main_content = include_template('search.php', ['categories' => $categories, 'lots' => $lots, 'message' => $message]);
+$main_content = include_template('search.php', ['categories' => $categories, 'lots' => $lots, 'message' => $message, 
+    'pages_count' => $pages_count, 'pages' =>$pages, 'cur_page' => $cur_page, 'search' => $search[0]]);
 $index_page = include_template('layout.php', 
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Поиск', 'search' => $search[0],]);
 
