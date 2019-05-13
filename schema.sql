@@ -44,3 +44,6 @@ user INT NOT NULL,
 FOREIGN KEY (lot) REFERENCES lots(id),
 FOREIGN KEY (user) REFERENCES users(id)
 );
+
+CREATE FULLTEXT INDEX lots_search
+ON lots(name, description);

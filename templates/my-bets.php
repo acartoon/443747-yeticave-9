@@ -9,9 +9,9 @@
         <tr class="rates__item <?=$classname?>">
           <td class="rates__info">
             <div class="rates__img">
-              <img src="<?=$rate['image_link']; ?>" width="54" height="40" alt="<?=$rate['NAME']; ?>">
+              <img src="<?=$rate['image_link']; ?>" width="54" height="40" alt="<?=htmlspecialchars($rate['NAME']); ?>">
             </div>
-            <h3 class="rates__title"><a href="lot.php?id=<?=$rate['id']; ?>"><?=$rate['NAME']?></a></h3>
+            <h3 class="rates__title"><a href="lot.php?id=<?=$rate['id_lot']; ?>"><?=htmlspecialchars($rate['NAME'])?></a></h3>
           </td>
           <td class="rates__category">
           <?=$rate['category']; ?>

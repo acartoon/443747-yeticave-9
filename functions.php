@@ -128,6 +128,7 @@ return $res;
  * @return string если торги окончены $class1, если победитель зарегистрированный пользователь $class2
  */
 function class_rates($user, $date, $class1, $class2) {
+    $res = '';
     if(is_null($user)) {
         if(check_date($date)) {
             $res = $class1;
@@ -149,6 +150,7 @@ function class_rates($user, $date, $class1, $class2) {
  * @return string если если осталось меньше суток $class1, если победитель зарегистрированный пользователь $class2
  */
 function class_rates_timer($user, $date, $class1, $class2) {
+    $res = '';
     if(is_null($user)) {
         if(check_passed_date($date)) {
             $res = $class1;
@@ -279,7 +281,7 @@ function get_rates($link, $id) {
  */
 function get_rates_by_user($link, $id) {
     $result = [];
-    $request = "SELECT l.NAME, l.image_link, l.id, c.NAME AS category, l.date_end, r.price, r.date_create, r.user, winner
+    $request = "SELECT l.NAME, l.image_link, l.id as id_lot, c.NAME AS category, l.date_end, r.price, r.date_create, r.user, winner
     FROM rates r
     JOIN lots l ON l.id = r.lot
     JOIN categories c ON l.category = c.id
@@ -367,6 +369,5 @@ function to_add_rate($id, $rates_count, $user_rate, $date_end) {
         }
     }
     return $add_rate;
-}
-
+};
 ?>
