@@ -22,7 +22,7 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
         $errors['name'] = 'Вашим именем можно вызвать сатану! Придумайте имя короче';
     }
 
-    if(isset($lot['rate']) and (int)$lot['rate'] <= 0) {
+    if(isset($lot['rate']) and intval($lot['rate']) <= 0) {
         $errors['rate'] = 'Начальная цена должна быть целым числом больше 0';
     }
 

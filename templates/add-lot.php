@@ -2,7 +2,7 @@
 <?php
 ?>
 <main>
-  <?php $nav_list; ?>
+  <?php $nav_list;?>
     <?php $classname = (empty($errors)) ? '' : 'form--invalid'; ?>
     <form class="form form--add-lot container <?=$classname?>" action="add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
       <h2>Добавление лота</h2>
@@ -22,7 +22,9 @@
           <select id="category" name="category"> 
             <option>Выберите категорию</option>
             <?php foreach ($categories as $category) :?>
-            <option <?=$value?> value="<?=$category['id']; ?>"><?=$category['name']; ?></option>
+            <option value="<?=$category['id']; ?>" <?=isset($lot['category']) ?
+            ($category['id'] == $lot['category'] ? 'selected' : '') : '' ?> ><?=$category['name']; ?></option>
+            
             <?php endforeach; ?>
           </select>
           <span class="form__error"><?=$message?></span>
@@ -36,8 +38,8 @@
         <textarea id="message" name="description" placeholder="Напишите описание лота"><?=$value?></textarea>
         <span class="form__error"><?=$message?></span>
       </div>
-      <?php $classname = isset($errors['img']) ? 'form__item--invalid' : '';
-       $message = isset($errors['img']) ? $errors['img']: '';?>
+      <?php $classname = isset($errors['file']) ? 'form__item--invalid' : '';
+       $message = isset($errors['file']) ? $errors['file']: '';?>
       <div class="form__item form__item--file <?=$classname?>">
         <label>Изображение <sup>*</sup></label>
         <div class="form__input-file">
@@ -45,6 +47,7 @@
           <label for="lot-img">
             Добавить
           </label>
+          <span class="form__error"><?=$message?></span>
         </div>
       </div>
       <div class="form__container-three">

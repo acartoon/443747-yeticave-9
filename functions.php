@@ -342,7 +342,7 @@ function error($error_code, $error_page, $title, $categories) {
  * не сделал последнюю ставку, пользователь залогинен и аукцион по этому лоту не закончен.
  * Если любое из этих значение false, то результат false
  *  */
-function to_add_rate($id, $rates_count, $user_rate, $date_end) {
+function to_add_rate($id, $rates, $date_end) {
     $add_rate = false;
 
     if(isset($_SESSION['user'])) {
@@ -354,8 +354,8 @@ function to_add_rate($id, $rates_count, $user_rate, $date_end) {
             $check_autor = true;
         }
 
-        if($rates_count > 0) {
-            if($_SESSION['user']['id'] === $user_rate) {
+        if(!empty($rates)) {
+            if($_SESSION['user']['id'] === $rates[0]['id_user']) {
                 $check_user = false;
             }
         }

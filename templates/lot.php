@@ -32,7 +32,7 @@
                     $message = !empty($error) ? $error: '';?>
                         <p class="lot-item__form-item form__item <?=$classname; ?>">
                             <label for="cost">Ваша ставка</label>
-                            <input id="cost" type="text" name="cost" placeholder="12 000" value ="<?=$value; ?>">
+                            <input id="cost" type="text" name="cost" placeholder="<?=number_format($lot['min_price'], 0, '.', ' '); ?>" value ="<?=$value; ?>">
                             <span class="form__error"><?=$message; ?></span>
                         </p>
                         <button type="submit" class="button">Сделать ставку</button>
@@ -46,7 +46,7 @@
                         <tr class="history__item">
                             <td class="history__name"><?=htmlspecialchars($rate['name'])?></td>
                             <td class="history__price"><?=number_format($rate['price'], 0, '.', ' ') . ' p'; ?></td>
-                            <td class="history__time"><?=$rate['date_create']?></td>
+                            <td class="history__time"><?=format_rates_time($rate['date_create']); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </table>

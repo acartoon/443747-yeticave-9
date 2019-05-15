@@ -14,7 +14,8 @@ if($lot['count'] == 0) {
 }
 $rates = get_rates($link, $get);
 $rates_count = count($rates);
-$add_rate = to_add_rate($lot['lot']['user'], $rates_count, $rates[0]['id_user'], $lot['lot']['date_end']);
+
+$add_rate = to_add_rate($lot['lot']['user'], $rates, $lot['lot']['date_end']);
 if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
     if($_POST['cost'] and !empty(trim($_POST['cost']))) {
         $min_price = $lot['lot']['rate'] + $lot['lot']['price'];

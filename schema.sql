@@ -1,5 +1,5 @@
-CREATE DATABASE yeticave_443747;
-USE yeticave_443747;
+CREATE DATABASE yeticave_4437476;
+USE yeticave_4437476;
 
 CREATE TABLE users (
 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,7 +32,7 @@ winner INT,
 FOREIGN KEY (category) REFERENCES categories(id),
 FOREIGN KEY (user) REFERENCES users(id),
 FOREIGN KEY (winner) REFERENCES users(id),
-INDEX (name, category, user)
+FULLTEXT INDEX lots_search (name, description)
 );
 
 CREATE TABLE rates (
@@ -45,5 +45,5 @@ FOREIGN KEY (lot) REFERENCES lots(id),
 FOREIGN KEY (user) REFERENCES users(id)
 );
 
-CREATE FULLTEXT INDEX lots_search
-ON lots(name, description);
+-- CREATE FULLTEXT INDEX lots_search
+-- ON lots(name, description);
