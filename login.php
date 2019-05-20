@@ -8,7 +8,7 @@ if(isset($_SESSION['user'])) {
     exit(); 
 }
 
-if($_SERVER['REQUEST_METHOD'] == 'POST' and !isset($_SESSION['user'])) {
+if($_SERVER['REQUEST_METHOD'] === 'POST' and !isset($_SESSION['user'])) {
     $required_fields = ['email', 'password'];
 
     foreach ($required_fields as $field) {

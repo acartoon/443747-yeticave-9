@@ -100,24 +100,27 @@ function get_winner($user) {
  * если лот не закрыт "ЧЧ:ММ"
  */
 function format_rates_timer($date, $user) {
-if(is_null($user)) {
-    $date_end = strtotime($date);
-    $date_now = strtotime('now');  
-        if($date_now > $date_end) {
-        $res = 'Торги окончены';
+   
+    if(is_null($user)) { //если пусто true
+        $date_end = strtotime($date);
+        $date_now = strtotime('now');  
+            if($date_now > $date_end) {
+            $res = 'Торги окончены';
+        } else {
+            $date_diff = $date_end - $date_now;
+            $hours = floor($date_diff / 3600);
+            $minutes = floor(($date_diff % 3600) / 60);
+            $res = $hours . ":" . $minutes; 
+        }
     } else {
-        $date_diff = $date_end - $date_now;
-        $hours = floor($date_diff / 3600);
-        $minutes = floor(($date_diff % 3600) / 60);
-        $res = $hours . ":" . $minutes; 
+        if(get_winner($user)) {
+            $res = 'Ставка выиграла';
+        } else {
+            $res = 'Торги окончены';
+        }
     }
-} else {
-    if(get_winner($user)) {
-        $res = 'Ставка выиграла';
-    } 
-}
-return $res;
-};
+    return $res;
+    };
 
 /**
  * Возвращает $class1 если входящая дата прошла, $class2 если победитель зарегистрированный пользователь
@@ -136,7 +139,9 @@ function class_rates($user, $date, $class1, $class2) {
     } else {
         if(get_winner($user)) {
             $res = $class2;
-        } 
+        } else {
+            $res = $class1;
+        }
     }
     return $res;
 };

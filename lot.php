@@ -9,14 +9,14 @@ $get = [
     $_GET['id']  
 ];
 $lot = get_lot($link, $get);
-if($lot['count'] == 0) {
+if($lot['count'] === 0) {
     error(404, '404.php', 'Такой страницы не существует!', $categories);  
 }
 $rates = get_rates($link, $get);
 $rates_count = count($rates);
 
 $add_rate = to_add_rate($lot['lot']['user'], $rates, $lot['lot']['date_end']);
-if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
+if(($_SERVER['REQUEST_METHOD'] === 'POST') and $_SESSION['user']) {
     if($_POST['cost'] and !empty(trim($_POST['cost']))) {
         $min_price = $lot['lot']['rate'] + $lot['lot']['price'];
         $step = $_POST['cost'];

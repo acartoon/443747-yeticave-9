@@ -1,0 +1,13 @@
+{
+    "name": "15/yeticave",
+    "description": "secret",
+    "authors": [
+        {
+            "name": "Secret",
+            "email": "toontown@inbox.ru"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "^6.0"
+    }
+}

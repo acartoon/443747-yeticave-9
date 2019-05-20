@@ -27,8 +27,6 @@
 
                 <nav class="user-menu">
                     <?php if(isset($_SESSION['user'])): ?>
-                    <?php 
-                    // print_r($_SESSION['user'])?>
                     <div class="user-menu__logged">
                         <p><?=htmlspecialchars($_SESSION['user']['name']); ?></p>
                         <a class="user-menu__bets" href="my-bets.php">Мои ставки</a>
@@ -55,10 +53,12 @@
         <nav class="nav">
             <ul class="nav__list container">
                 <!--заполните этот список из массива категорий-->
+                
 
-                <?php foreach ($categories as $value) :?>
+                <?php foreach ($categories as $category) :?>
+                
                 <li class="nav__item">
-                    <a href="pages/all-lots.html"><?=$value['name']; ?></a>
+                <a href="all-lots.php?category=<?=$category['id']; ?>"><?=$category['name'];$category['id']; ?></a>
                 </li>
                 <?php endforeach; ?>
             </ul>
@@ -106,7 +106,7 @@
                     </svg>
                 </a>
             </div>
-            <a class="main-footer__add-lot button" href="add-lot.html">Добавить лот</a>
+            <a class="main-footer__add-lot button" href="add.php">Добавить лот</a>
             <div class="main-footer__developed-by">
                 <span class="visually-hidden">Разработано:</span>
                 <a class="logo-academy" href="https://htmlacademy.ru/intensive/php">
