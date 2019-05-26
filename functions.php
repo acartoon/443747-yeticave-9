@@ -375,4 +375,3 @@ function to_add_rate($id, $rates, $date_end) {
     }
     return $add_rate;
 };
-?>

@@ -22,7 +22,7 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
         $errors['name'] = 'Вашим именем можно вызвать сатану! Придумайте имя короче';
     }
 
-    if(isset($lot['rate']) and intval($lot['rate']) <= 0) {
+    if(isset($lot['rate']) and (!is_numeric($lot['rate']) or (int)$lot['rate'] != $lot['rate'])) {
         $errors['rate'] = 'Начальная цена должна быть целым числом больше 0';
     }
 
@@ -37,9 +37,11 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
         }
     }
     
-    if(isset($lot['step']) and (int)$lot['step'] <= 0) {
+    if(isset($lot['step']) and (!is_numeric($lot['step']) or (int)$lot['step'] != $lot['step'])) {
         $errors['step'] = 'Шаг ставки должен быть целым числом больше 0';
+        
     }
+  
 
     if(isset($lot['date'])) {
         if(!is_date_valid($lot['date'])) {
@@ -82,6 +84,14 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
         }
     }
 }
+
+// if(isset($lot['rate']) and ((int)$lot['rate'] != $lot['rate'])) {
+// if(is_numeric($lot['rate'])) {
+//     print  'ob,r';
+//     print (int)$lot['rate'];
+//     print $lot['rate'];
+// }
+
 $main_content = include_template('add-lot.php', ['categories' => $categories, 'errors' => $errors, 'lot' => $lot]);
 $index_page = include_template('layout.php', 
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Карточка товара']);

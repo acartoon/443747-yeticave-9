@@ -72,4 +72,3 @@ $index_page = include_template('layout.php',
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Поиск', 'search' => $search[0],]);
 
 print $index_page;
-?>

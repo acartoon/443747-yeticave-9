@@ -10,4 +10,3 @@ $index_page = include_template('layout.php',
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Главная']);
 
 print $index_page;
-?>

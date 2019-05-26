@@ -30,7 +30,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' and !isset($_SESSION['user'])) {
         }
     }
 
-    if(isset($data['password']) and $user) {
+    if(isset($data['password']) and isset($user)) {
         if (!password_verify($data['password'], $user['pass'])) {
             $errors['password'] = 'Неверный пароль';
         }
@@ -49,4 +49,3 @@ $index_page = include_template('layout.php',
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Главная']);
 
 print $index_page;
-?>

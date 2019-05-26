@@ -24,7 +24,7 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST') and !isset($_SESSION['user'])) {
     }
 
     if(isset($user['name']) and strlen($user['name']) > 64) {
-        $errors['name'] = 'Слишком длинное имя';
+        $errors['name'] = 'Слишком длинное имя. Максимальная длинна символов 64';
     }
     
     if(isset($user['message']) and strlen($user['message']) > 200) {
@@ -61,4 +61,3 @@ $index_page = include_template('layout.php',
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Карточка товара']);
 
 print $index_page;
-?>
