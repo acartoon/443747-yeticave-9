@@ -1,4 +1,4 @@
-CREATE DATABASE yeticave_443747;
+CREATE DATABASE yeticave_443747 character set utf8;
 USE yeticave_443747;
 
 CREATE TABLE users (
@@ -45,5 +45,3 @@ FOREIGN KEY (lot) REFERENCES lots(id),
 FOREIGN KEY (user) REFERENCES users(id)
 );
 
--- CREATE FULLTEXT INDEX lots_search
--- ON lots(name, description);

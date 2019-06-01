@@ -3,68 +3,67 @@ require_once 'init.php';
 $errors = [];
 $lot = [];
 
-if(!isset($_SESSION['user'])) {
-    error(403, '403.php', 'Доступ запрещен!', $categories);  
+if (!isset($_SESSION['user'])) {
+    error(403, '403.php', 'Доступ запрещен!', $categories);
 }
 
-if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
+if (($_SERVER['REQUEST_METHOD'] === 'POST') and $_SESSION['user']) {
     $required_fields = ['name', 'category', 'description', 'rate', 'step', 'date'];
 
-    foreach($required_fields as $field) {
-        if(isset($_POST[$field]) and !empty(trim($_POST[$field]))) {
+    foreach ($required_fields as $field) {
+        if (isset($_POST[$field]) and !empty(trim($_POST[$field]))) {
             $lot[$field] = trim($_POST[$field]);
         } else {
             $errors[$field] = 'Поле не заполнено';
         }
     }
 
-    if(isset($lot['name']) and strlen($lot['name']) > 64) {
+    if (isset($lot['name']) and strlen($lot['name']) > 64) {
         $errors['name'] = 'Вашим именем можно вызвать сатану! Придумайте имя короче';
     }
 
-    if(isset($lot['rate']) and (!is_numeric($lot['rate']) or (int)$lot['rate'] != $lot['rate'])) {
+    if (isset($lot['rate']) and !ctype_digit($lot['rate'])) {
         $errors['rate'] = 'Начальная цена должна быть целым числом больше 0';
     }
 
-    if(isset($lot['category'])) {
+    if (isset($lot['category'])) {
         $check_category = 'SELECT * FROM categories WHERE id = ?';
-        $stmt =  db_get_prepare_stmt($link, $check_category, [$lot['category']]);
+        $stmt = db_get_prepare_stmt($link, $check_category, [$lot['category']]);
         mysqli_stmt_execute($stmt);
         $res = mysqli_stmt_get_result($stmt);
-        $total = $res ? mysqli_fetch_assoc($res): null;
-        if(!$total) {
+        $total = $res ? mysqli_fetch_assoc($res) : null;
+        if (!$total) {
             $errors['category'] = 'Выберете существующую категорию';
         }
     }
-    
-    if(isset($lot['step']) and (!is_numeric($lot['step']) or (int)$lot['step'] != $lot['step'])) {
-        $errors['step'] = 'Шаг ставки должен быть целым числом больше 0';
-        
-    }
-  
 
-    if(isset($lot['date'])) {
-        if(!is_date_valid($lot['date'])) {
+    if (isset($lot['step']) and !ctype_digit($lot['step'])) {
+        $errors['step'] = 'Шаг ставки должен быть целым числом больше 0';
+
+    }
+
+
+    if (isset($lot['date'])) {
+        if (!is_date_valid($lot['date'])) {
             $errors['date'] = 'Дата завершения должна быть в формате "ГГГГ-ММ-ДД"';
-        }
-        elseif (check_date($lot['date'])) {
+        } elseif (check_date($lot['date'])) {
             $errors['date'] = 'Дата окончания должна быть больше текущей хотя бы на один день';
         }
     }
 
-    if(isset($_FILES['img']) && is_uploaded_file($_FILES['img']['tmp_name'])) {
+    if (isset($_FILES['img']) && is_uploaded_file($_FILES['img']['tmp_name'])) {
         $tmp_name = $_FILES['img']['tmp_name'];
         $file_type = mime_content_type($tmp_name);
-        if(($file_type !== 'image/png') and ($file_type !== 'image/jpeg')){
+        if (($file_type !== 'image/png') and ($file_type !== 'image/jpeg')) {
             $errors['file'] = 'Неверный формат файла';
-        }  
+        }
     } else {
         $errors['file'] = 'Не загружен файл';
     }
 
-    if(!count($errors)) {
+    if (!count($errors)) {
         $file_type = 'png';
-        if($file_type === 'image/jpeg') {
+        if ($file_type === 'image/jpeg') {
             $file_type = 'jpeg';
         }
         $file_unic = uniqid() . '.' . $file_type;
@@ -73,28 +72,28 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST') and $_SESSION['user']) {
 
         $sql = 'INSERT INTO lots (date_create, name, description, image_link, initial_price, date_end, step_rate, category, user)
             VAlUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
-        $stmt = db_get_prepare_stmt($link, $sql, [$lot['name'], $lot['description'], $file_url, $lot['rate'], $lot['date'], $lot['step'], $lot['category'], $_SESSION['user']['id']]);
+        $stmt = db_get_prepare_stmt($link, $sql, [
+            $lot['name'],
+            $lot['description'],
+            $file_url,
+            $lot['rate'],
+            $lot['date'],
+            $lot['step'],
+            $lot['category'],
+            $_SESSION['user']['id']
+        ]);
         $res = mysqli_stmt_execute($stmt);
-        if($res) {
+        if ($res) {
             $lot_id = mysqli_insert_id($link);
             header("location: lot.php?id=" . $lot_id);
             exit();
-        } else {
-            error(404, '404.php', 'Ошибка добавления лота!', $categories);  
         }
+        error(404, '404.php', 'Ошибка добавления лота!', $categories);
     }
 }
 
-// if(isset($lot['rate']) and ((int)$lot['rate'] != $lot['rate'])) {
-// if(is_numeric($lot['rate'])) {
-//     print  'ob,r';
-//     print (int)$lot['rate'];
-//     print $lot['rate'];
-// }
-
 $main_content = include_template('add-lot.php', ['categories' => $categories, 'errors' => $errors, 'lot' => $lot]);
-$index_page = include_template('layout.php', 
+$index_page = include_template('layout.php',
     ['categories' => $categories, 'main_content' => $main_content, 'title' => 'Карточка товара']);
 
 print $index_page;
-?>
