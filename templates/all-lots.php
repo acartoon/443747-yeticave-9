@@ -37,7 +37,7 @@
                             href="all-lots.php?category=<?= $category; ?>&page=<?= ($cur_page <= 1) ? 1 : $cur_page - 1; ?>">Назад</a>
                 </li>
                 <?php foreach ($pages as $page): ?>
-                    <li class="pagination-item <?php if ($page == $cur_page): ?>pagination__item--active<?php endif; ?>">
+                    <li class="pagination-item <?php if ($page === $cur_page): ?>pagination__item--active<?php endif; ?>">
                         <a href="all-lots.php?category=<?= $category; ?>&page=<?= $page; ?>"><?= $page; ?></a></li>
                 <?php endforeach; ?>
                 <li class="pagination-item pagination-item-next"><a
